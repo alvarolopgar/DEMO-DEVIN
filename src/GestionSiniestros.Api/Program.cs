@@ -74,3 +74,6 @@ app.MapControllers();
 app.MapHealthChecks("/health");
 
 app.Run();
+
+// Necesario para que WebApplicationFactory<Program> pueda acceder desde tests
+public partial class Program { }
