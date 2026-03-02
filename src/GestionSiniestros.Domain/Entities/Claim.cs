@@ -123,7 +123,7 @@ public class Claim
     private static string GenerateClaimNumber()
     {
         var year = DateTime.UtcNow.Year;
-        var sequence = Math.Abs(Guid.NewGuid().GetHashCode()) % 1000000;
+        var sequence = (Guid.NewGuid().GetHashCode() & 0x7FFFFFFF) % 1000000;
         return $"CLM-{year}-{sequence:D6}";
     }
 }
