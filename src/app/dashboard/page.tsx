@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Task, TaskInsert, TaskUpdate } from "@/lib/types";
 import TaskCard from "@/components/TaskCard";
 import TaskModal from "@/components/TaskModal";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 
@@ -20,7 +20,8 @@ export default function DashboardPage() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
-  const supabase = createClient();
+  // Memoize Supabase client to prevent re-creation on every render
+  const supabase = useMemo(() => createClient(), []);
 
   const fetchTasks = useCallback(async () => {
     const { data, error } = await supabase
