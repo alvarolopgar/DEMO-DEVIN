@@ -1,6 +1,6 @@
 import { CreateClaimRequest, ClaimResponse, ValidationProblemDetails } from "@/types/claim";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5062/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5284/api";
 
 export class ApiError extends Error {
   public status: number;
