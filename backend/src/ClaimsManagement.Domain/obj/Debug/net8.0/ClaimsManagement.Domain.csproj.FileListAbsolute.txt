@@ -1,0 +1,11 @@
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/bin/Debug/net8.0/ClaimsManagement.Domain.deps.json
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/bin/Debug/net8.0/ClaimsManagement.Domain.dll
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/bin/Debug/net8.0/ClaimsManagement.Domain.pdb
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/obj/Debug/net8.0/ClaimsManagement.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/obj/Debug/net8.0/ClaimsManagement.Domain.AssemblyInfoInputs.cache
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/obj/Debug/net8.0/ClaimsManagement.Domain.AssemblyInfo.cs
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/obj/Debug/net8.0/ClaimsManagement.Domain.csproj.CoreCompileInputs.cache
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/obj/Debug/net8.0/ClaimsManagement.Domain.dll
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/obj/Debug/net8.0/refint/ClaimsManagement.Domain.dll
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/obj/Debug/net8.0/ClaimsManagement.Domain.pdb
+/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Domain/obj/Debug/net8.0/ref/ClaimsManagement.Domain.dll

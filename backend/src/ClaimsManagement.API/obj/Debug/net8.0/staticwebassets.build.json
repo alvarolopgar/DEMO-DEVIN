@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "snkDdqjxoZ/ksluKzp/BrNknIRHtGKa4i5vpNPM28hA=",
+  "Source": "ClaimsManagement.API",
+  "BasePath": "_content/ClaimsManagement.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "R7/Vg19NZJY=",
+  "success": true,
+  "projectFilePath": "/home/ubuntu/repos/DEMO-DEVIN/backend/src/ClaimsManagement.Infrastructure/ClaimsManagement.Infrastructure.csproj",
+  "expectedPackageFiles": [
+    "/home/ubuntu/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.2/microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}
