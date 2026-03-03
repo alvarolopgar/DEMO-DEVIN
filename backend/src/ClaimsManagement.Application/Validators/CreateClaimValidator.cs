@@ -12,7 +12,7 @@ public static partial class CreateClaimValidator
         if (string.IsNullOrWhiteSpace(request.PolicyNumber))
             errors.Add("El número de póliza es obligatorio.");
 
-        if (request.ClaimDate > DateTime.UtcNow.Date.AddDays(1))
+        if (request.ClaimDate.Date > DateTime.UtcNow.Date)
             errors.Add("La fecha del siniestro no puede ser futura.");
 
         if (string.IsNullOrWhiteSpace(request.VehiclePlate))

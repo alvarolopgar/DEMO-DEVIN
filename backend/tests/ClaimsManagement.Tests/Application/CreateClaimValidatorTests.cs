@@ -118,6 +118,15 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    public void Validate_TomorrowDate_ShouldReturnError()
+    {
+        var tomorrow = DateTime.UtcNow.Date.AddDays(1);
+        var request = TestDataBuilder.ValidRequest(claimDate: tomorrow);
+        var errors = CreateClaimValidator.Validate(request);
+        Assert.Contains("La fecha del siniestro no puede ser futura.", errors);
+    }
+
+    [Fact]
     public void Validate_TodayDate_ShouldNotReturnDateError()
     {
         var today = DateTime.UtcNow.Date;
