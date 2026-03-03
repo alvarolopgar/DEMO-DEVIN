@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../buildMultiTargeting/ClaimsManagement.API.props" />
-</Project>
