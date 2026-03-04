@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@fluentui/react-components": "^9.73.2",
+    "@fluentui/react-icons": "^2.0.320",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"
