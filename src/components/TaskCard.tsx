@@ -1,24 +1,12 @@
 "use client";
 
 import { Task } from "@/lib/types";
-
-const statusColors = {
-  pending: "bg-amber-100 text-amber-800",
-  in_progress: "bg-blue-100 text-blue-800",
-  completed: "bg-green-100 text-green-800",
-};
-
-const statusLabels = {
-  pending: "Pending",
-  in_progress: "In Progress",
-  completed: "Completed",
-};
-
-const priorityColors = {
-  low: "bg-slate-100 text-slate-600",
-  medium: "bg-orange-100 text-orange-700",
-  high: "bg-red-100 text-red-700",
-};
+import {
+  PRIORITY_COLORS,
+  PRIORITY_LABELS,
+  STATUS_COLORS,
+  STATUS_LABELS,
+} from "@/lib/constants";
 
 interface TaskCardProps {
   task: Task;
@@ -81,18 +69,17 @@ export default function TaskCard({
             <div className="flex items-center gap-2 mt-3 flex-wrap">
               <span
                 className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                  statusColors[task.status]
+                  STATUS_COLORS[task.status]
                 }`}
               >
-                {statusLabels[task.status]}
+                {STATUS_LABELS[task.status]}
               </span>
               <span
                 className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                  priorityColors[task.priority]
+                  PRIORITY_COLORS[task.priority]
                 }`}
               >
-                {task.priority.charAt(0).toUpperCase() +
-                  task.priority.slice(1)}
+                {PRIORITY_LABELS[task.priority]}
               </span>
               {task.due_date && (
                 <span className="text-xs text-slate-400">
