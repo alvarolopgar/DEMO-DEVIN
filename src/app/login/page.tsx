@@ -1,5 +1,6 @@
 "use client";
 
+import ErrorMessage from "@/components/ErrorMessage";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -7,6 +8,7 @@ import { useEffect, useState } from "react";
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -26,15 +28,15 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOAuth({
+    setError(null);
+    const { error } = await createClient().auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
     if (error) {
-      console.error("Login error:", error.message);
+      setError("Could not sign in with Google. Please try again.");
       setLoading(false);
     }
   };
@@ -72,6 +74,12 @@ export default function LoginPage() {
               Organize your tasks efficiently
             </p>
           </div>
+
+          {error && (
+            <div className="mb-4">
+              <ErrorMessage message={error} onDismiss={() => setError(null)} />
+            </div>
+          )}
 
           <button
             onClick={handleGoogleLogin}
