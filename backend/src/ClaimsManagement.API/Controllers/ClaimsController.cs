@@ -6,7 +6,6 @@ namespace ClaimsManagement.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Produces("application/json")]
 public class ClaimsController : ControllerBase
 {
     private readonly ClaimService _claimService;
@@ -25,8 +24,8 @@ public class ClaimsController : ControllerBase
     /// <response code="201">Claim created successfully</response>
     /// <response code="400">Validation errors</response>
     [HttpPost]
-    [ProducesResponseType(typeof(ClaimResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ClaimResponse), StatusCodes.Status201Created, "application/json")]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest, "application/problem+json")]
     public async Task<IActionResult> CreateClaim(
         [FromBody] CreateClaimRequest request,
         CancellationToken cancellationToken)
