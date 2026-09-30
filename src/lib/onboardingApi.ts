@@ -1,7 +1,7 @@
 import { ApiError } from "@/lib/api";
 import { OnboardingResponse, SaveOnboardingDraftRequest } from "@/types/onboarding";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5284/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "/api";
 const BASE_PATH = `${API_BASE_URL}/onboarding-requests`;
 
 type HttpMethod = "GET" | "POST" | "PATCH";
