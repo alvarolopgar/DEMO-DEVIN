@@ -87,6 +87,10 @@ verificación es un componente sustituible con una implementación **dummy** det
 | REQ-002-23 | Con la identidad verificada, el sistema completa el alta creando el expediente del cliente y la solicitud pasa a **ClienteCreado**. |
 | REQ-002-24 | Una solicitud en Borrador caduca a los **30 días** de su creación y una en PendienteVerificacion a los 30 días de su envío, pasando a **Caducada**. Una solicitud Caducada no admite modificaciones ni más transiciones ([C-002-08](clarifications.md#c-002-08--caducidad-de-las-solicitudes)). |
 | REQ-002-25 | Solo son válidas las transiciones de estado documentadas en [`data-model.md`](data-model.md); cualquier operación incompatible con el estado actual se rechaza con el código de conflicto correspondiente. |
+| REQ-002-26 | Toda respuesta de error se devuelve en formato Problem Details (RFC 7807), incluidos los errores internos del servidor, que nunca exponen trazas, nombres de clases ni detalles de la implementación ([C-002-12](clarifications.md#c-002-12--alcance-de-la-seguridad-en-la-api)). |
+| REQ-002-27 | El servicio respeta la integridad del protocolo HTTP: una operación con un método no soportado se rechaza, un contenido con formato distinto de JSON se rechaza y un cuerpo JSON malformado se rechaza como petición inválida, siempre en Problem Details. |
+| REQ-002-28 | Los datos del solicitante se tratan como texto literal: el sistema los almacena y los devuelve tal cual, sin ejecutar ni interpretar marcado o código incluido en ellos. |
+| REQ-002-29 | El proveedor de verificación de identidad es configurable: con credenciales de un proveedor externo (Sumsub, [C-002-11](clarifications.md#c-002-11--proveedor-de-verificación-externo)) el servicio consulta su API firmada; sin credenciales se usa el servicio simulado determinista y el flujo no se bloquea. |
 
 ## 5. Criterios de aceptación
 
@@ -677,6 +681,79 @@ Scenario Outline: Un documento con solicitud terminada permite un nuevo alta
     | Caducada  |
 ```
 
+### AC-002-35 – Método HTTP no soportado
+REQ: REQ-002-27
+
+```gherkin
+Scenario: Una operación con método no soportado se rechaza sin efectos
+  Given una solicitud existente en cualquier estado
+  When se hace una petición DELETE a la URL de la solicitud
+  Then se rechaza la operación
+  And la solicitud conserva su estado
+```
+
+### AC-002-36 – Contenido no JSON o JSON malformado
+REQ: REQ-002-26, REQ-002-27
+
+```gherkin
+Scenario Outline: Peticiones con cuerpo inválido se rechazan en Problem Details
+  Given el servicio de alta
+  When se envía "<petición>"
+  Then se devuelve un error de petición inválida (400)
+  And el cuerpo de la respuesta tiene formato Problem Details (RFC 7807)
+
+  Examples:
+    | petición                                             |
+    | POST con Content-Type distinto de application/json   |
+    | POST con un cuerpo JSON malformado                   |
+```
+
+### AC-002-37 – Error interno sin detalles de implementación
+REQ: REQ-002-26
+
+```gherkin
+Scenario: Un fallo interno se devuelve en Problem Details sin trazas
+  Given una operación que produce un error interno del servidor
+  Then se devuelve 500 en formato Problem Details (RFC 7807)
+  And el cuerpo no contiene trazas de stack, nombres de clases ni rutas internas
+```
+
+### AC-002-38 – Datos del solicitante tratados como texto literal
+REQ: REQ-002-28
+
+```gherkin
+Scenario: Marcado o código en los datos se almacena y devuelve literal
+  Given un borrador con nombre "<script>alert(1)</script>"
+  When se consulta la solicitud por su identificador
+  Then el nombre devuelto es exactamente "<script>alert(1)</script>"
+```
+
+### AC-002-39 – Proveedor simulado cuando no hay credenciales
+REQ: REQ-002-21, REQ-002-29
+
+```gherkin
+Scenario: Sin credenciales de proveedor externo se usa el servicio simulado
+  Given el servicio sin credenciales de proveedor externo configuradas
+  Then la verificación usa el servicio simulado determinista
+  And los documentos que empiezan por "99" se rechazan y el resto se verifica
+```
+
+### AC-002-40 – Mapeo de la respuesta del proveedor externo
+REQ: REQ-002-21, REQ-002-22, REQ-002-29
+
+```gherkin
+Scenario Outline: La respuesta del proveedor externo decide el resultado
+  Given un proveedor externo que responde "<respuesta>"
+  When se verifica una solicitud en PendienteVerificacion
+  Then el resultado es "<resultado>"
+
+  Examples:
+    | respuesta                    | resultado                        |
+    | aprobación                   | Verificada                       |
+    | rechazo con motivo           | Rechazada con el motivo devuelto |
+    | error del proveedor          | error propagado, estado sin cambio |
+```
+
 ## 6. Estados de interfaz
 
 | ID | Estado | Descripción | AC |
@@ -700,7 +777,8 @@ Diseños, mapa de frames Figma e identidad gráfica: [`ui/states.md`](ui/states.
 | ID | Requisito | Métrica / umbral | Verificación |
 |---|---|---|---|
 | NFR-002-01 | Rendimiento del alta | p95 del envío de una solicitud < 300 ms con 20 peticiones/s sostenidas durante 60 s en el entorno de preproducción | Prueba de carga (pendiente de entorno, T-002-20) |
-| NFR-002-02 | Errores estándar | 100 % de las respuestas de error (400, 404, 409) en formato Problem Details (RFC 7807) | AC-002-18 (tests de contrato) |
+| NFR-002-02 | Errores estándar | 100 % de las respuestas de error (400, 404, 409 y 500) en formato Problem Details (RFC 7807), sin trazas ni detalles internos | AC-002-18, AC-002-36, AC-002-37 (tests de contrato) |
+| NFR-002-11 | Seguridad de superficie API | Peticiones fuera de contrato (método, formato, JSON malformado) rechazadas siempre con Problem Details; datos del solicitante almacenados y devueltos de forma literal | AC-002-35..38 (suite de seguridad) |
 | NFR-002-03 | Seguridad | 0 vulnerabilidades High/Critical (Snyk SCA) en dependencias de producción | Job CI `security` |
 | NFR-002-04 | Accesibilidad | Todos los campos tienen etiqueta accesible y se marcan como obligatorios; contraste de color ≥ 4,5:1 con los tokens de `ui/brand.md`; objetivo WCAG 2.1 AA | Tests de UI por etiqueta; auditoría axe pendiente |
 | NFR-002-05 | Contrato estable | El servicio cumple al 100 % el contrato `contracts/openapi.yaml`, que pasa el linter sin errores | Tests de contrato + job CI `spec-conformance` |

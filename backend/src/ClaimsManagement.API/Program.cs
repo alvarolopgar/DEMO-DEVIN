@@ -23,7 +23,11 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Clean Architecture DI
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+// Errores internos → ProblemDetails 500 sin trazas (SPEC-002, REQ-002-26)
+builder.Services.AddExceptionHandler<ClaimsManagement.API.ErrorHandling.ApiExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 // CORS for React frontend
 builder.Services.AddCors(options =>
@@ -37,6 +41,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Swagger always enabled for demo
 app.UseSwagger();

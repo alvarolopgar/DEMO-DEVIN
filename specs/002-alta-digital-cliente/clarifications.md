@@ -156,3 +156,38 @@ siga el playbook [SDD – Change Request](../../docs/devin/playbook-sdd-change-r
   comprobaciones del gate (REQ↔AC, plan.md, lint del contrato, trazabilidad) aplican siempre.
 - **Estado**: Decisión provisional – pendiente de confirmación
 - **Impacto en la spec**: NFR-002-07, `scripts/sdd/check_spec_conformance.py`, README.
+
+## C-002-11 – Proveedor de verificación externo
+
+- **Contexto / evidencia**: REQ-002-21 exige un proveedor de verificación. No existe ningún proveedor
+  KYC real gratuito en producción; los principales (Sumsub, Onfido, Persona, Veriff) ofrecen sandboxes
+  gratuitos que devuelven respuestas simuladas. En España las vías reales (Cl@ve, FNMT) exigen acuerdos
+  institucionales.
+- **Opciones**: A) Solo servicio simulado. B) Proveedor HTTP configurable con fallback al simulado.
+  C) Integración con Cl@ve/FNMT.
+- **Recomendación**: B — la arquitectura ya desacopla el proveedor tras `IIdentityVerificationService`;
+  B permite conectar un sandbox real sin cambiar el flujo y sin credenciales se mantiene el dummy.
+- **Decisión**: B. Se implementa `SumsubIdentityVerificationService` (API REST de Sumsub, firmada
+  HMAC-SHA256 con `X-App-Token`/`X-App-Access-Ts`/`X-App-Access-Sig`). Se activa solo cuando la
+  configuración incluye `Sumsub:AppToken`, `Sumsub:SecretKey` y `Sumsub:LevelName` (vía
+  secretos/variables de entorno); en su ausencia se registra `DummyIdentityVerificationService`.
+  El sandbox de Sumsub responde resultados simulados, igual que el dummy pero por HTTP.
+- **Estado**: Decisión provisional – pendiente de credenciales del sandbox (Sumsub:AppToken, SecretKey,
+  LevelName)
+- **Impacto en la spec**: REQ-002-21, REQ-002-22, REQ-002-29, AC-002-39/-40, NFR-002-10.
+
+## C-002-12 – Alcance de la seguridad en la API
+
+- **Contexto / evidencia**: la spec no incluye autenticación ni autorización (es un flujo público de
+  alta, C-002-01) ni persistencia real; aun así conviene fijar el comportamiento de la API ante
+  peticiones fuera de contrato y errores internos.
+- **Opciones**: A) Suite de seguridad de API (integridad HTTP, errores sin trazas, datos literales).
+  B) Añadir además authN/authZ. C) Dejarlo fuera.
+- **Recomendación**: A — verificable hoy y consistente con NFR-002-02/-11; B queda aplazada (requiere
+  decisión de negocio sobre el modelo de acceso).
+- **Decisión**: A. La suite cubre: método no soportado (405/ProblemDetails), contenido no JSON o JSON
+  malformado (400/ProblemDetails), error interno (500/ProblemDetails sin trazas ni detalles internos)
+  y tratamiento literal de los datos del solicitante (sin ejecutar marcado/código). Fuera de alcance:
+  autenticación, autorización, rate limiting y cabeceras de seguridad.
+- **Estado**: Decisión provisional – pendiente de confirmación
+- **Impacto en la spec**: REQ-002-26..28, AC-002-35..38, NFR-002-02, NFR-002-11.
