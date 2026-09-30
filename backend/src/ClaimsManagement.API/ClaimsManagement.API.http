@@ -1,0 +1,18 @@
+@ClaimsManagement.API_HostAddress = http://localhost:5284
+
+POST {{ClaimsManagement.API_HostAddress}}/api/claims
+Content-Type: application/json
+
+{
+  "policyNumber": "POL-2024-001234",
+  "claimDate": "2024-12-01T00:00:00",
+  "claimType": "Colision",
+  "vehiclePlate": "1234 ABC",
+  "insuredName": "Juan García López",
+  "phone": "612345678",
+  "address": "Calle Mayor 10, 2ºA",
+  "postalCode": "28001",
+  "description": "Colisión en intersección con semáforo en ámbar"
+}
+
+###

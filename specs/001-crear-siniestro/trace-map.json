@@ -1,0 +1,82 @@
+{
+  "jiraBaseUrl": "https://lopezgarciaalvaro03.atlassian.net/browse/",
+  "jira": {
+    "default": ["DDD-2"],
+    "byReq": {
+      "REQ-001-01": ["DDD-3", "DDD-4"],
+      "REQ-001-02": ["DDD-3", "DDD-4"],
+      "REQ-001-03": ["DDD-3"],
+      "REQ-001-04": ["DDD-3", "DDD-4"],
+      "REQ-001-05": ["DDD-3", "DDD-4"],
+      "REQ-001-06": ["DDD-3", "DDD-4"],
+      "REQ-001-07": ["DDD-3"],
+      "REQ-001-08": ["DDD-3", "DDD-4"],
+      "REQ-001-09": ["DDD-3"],
+      "REQ-001-10": ["DDD-3"],
+      "REQ-001-11": ["DDD-4"],
+      "REQ-001-12": ["DDD-4"]
+    }
+  },
+  "code": {
+    "REQ-001-01": [
+      "backend/src/ClaimsManagement.Application/DTOs/CreateClaimRequest.cs",
+      "backend/src/ClaimsManagement.Application/Validators/CreateClaimValidator.cs",
+      "src/lib/validation.ts",
+      "src/components/ClaimForm.tsx"
+    ],
+    "REQ-001-02": [
+      "backend/src/ClaimsManagement.Application/Validators/CreateClaimValidator.cs",
+      "src/lib/validation.ts"
+    ],
+    "REQ-001-03": [
+      "backend/src/ClaimsManagement.Domain/Entities/Claim.cs"
+    ],
+    "REQ-001-04": [
+      "backend/src/ClaimsManagement.Application/Common/BusinessDate.cs",
+      "backend/src/ClaimsManagement.Application/Validators/CreateClaimValidator.cs",
+      "src/lib/businessDate.ts",
+      "src/lib/validation.ts"
+    ],
+    "REQ-001-05": [
+      "backend/src/ClaimsManagement.Application/Validators/CreateClaimValidator.cs",
+      "src/lib/validation.ts"
+    ],
+    "REQ-001-06": [
+      "backend/src/ClaimsManagement.Domain/Enums/ClaimType.cs",
+      "backend/src/ClaimsManagement.Application/Validators/CreateClaimValidator.cs",
+      "src/types/claim.ts"
+    ],
+    "REQ-001-07": [
+      "backend/src/ClaimsManagement.Application/Services/ClaimService.cs",
+      "backend/src/ClaimsManagement.Application/DTOs/ClaimResponse.cs",
+      "backend/src/ClaimsManagement.API/Controllers/ClaimsController.cs"
+    ],
+    "REQ-001-08": [
+      "backend/src/ClaimsManagement.Application/Validators/CreateClaimValidator.cs",
+      "backend/src/ClaimsManagement.API/Controllers/ClaimsController.cs",
+      "src/lib/validation.ts"
+    ],
+    "REQ-001-09": [
+      "backend/src/ClaimsManagement.Application/Services/ClaimService.cs"
+    ],
+    "REQ-001-10": [
+      "backend/src/ClaimsManagement.Infrastructure/Repositories/InMemoryClaimRepository.cs"
+    ],
+    "REQ-001-11": [
+      "src/components/ClaimForm.tsx",
+      "src/lib/api.ts"
+    ],
+    "REQ-001-12": [
+      "src/components/ClaimForm.tsx"
+    ]
+  },
+  "figma": {
+    "fileUrl": "https://www.figma.com/design/EDlAb7RBmlokWehf8kUdmB/Devin-demo-Figma",
+    "frames": {
+      "UI-001-01": "28-2",
+      "UI-001-02": "28-63",
+      "UI-001-03": "28-127",
+      "UI-001-04": "28-192"
+    }
+  }
+}
