@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - init
+      - devin/1772548855-kan5-fullstack
     paths:
       - 'backend/**'
       - 'src/**'
