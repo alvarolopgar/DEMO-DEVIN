@@ -5,14 +5,16 @@ namespace ClaimsManagement.Application.Validators;
 
 public static partial class CreateClaimValidator
 {
-    public static List<string> Validate(CreateClaimRequest request)
+    public static List<string> Validate(CreateClaimRequest request, TimeProvider? timeProvider = null)
     {
+        var now = (timeProvider ?? TimeProvider.System).GetUtcNow();
+
         var errors = new List<string>();
 
         if (string.IsNullOrWhiteSpace(request.PolicyNumber))
             errors.Add("El número de póliza es obligatorio.");
 
-        if (request.ClaimDate.Date > DateTime.UtcNow.Date)
+        if (request.ClaimDate.Date > now.UtcDateTime.Date)
             errors.Add("La fecha del siniestro no puede ser futura.");
 
         if (string.IsNullOrWhiteSpace(request.VehiclePlate))

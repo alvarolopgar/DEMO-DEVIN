@@ -8,17 +8,19 @@ namespace ClaimsManagement.Application.Services;
 public class ClaimService
 {
     private readonly IClaimRepository _repository;
+    private readonly TimeProvider _timeProvider;
 
-    public ClaimService(IClaimRepository repository)
+    public ClaimService(IClaimRepository repository, TimeProvider? timeProvider = null)
     {
         _repository = repository;
+        _timeProvider = timeProvider ?? TimeProvider.System;
     }
 
     public async Task<(ClaimResponse? Response, List<string> Errors)> CreateClaimAsync(
         CreateClaimRequest request,
         CancellationToken cancellationToken = default)
     {
-        var errors = CreateClaimValidator.Validate(request);
+        var errors = CreateClaimValidator.Validate(request, _timeProvider);
         if (errors.Count > 0)
             return (null, errors);
 
