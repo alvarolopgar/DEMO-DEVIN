@@ -17,6 +17,13 @@ public static class OpenApiSchemaValidator
 
     private static void ValidateNode(OpenApiSchema schema, JsonElement value, string path, List<string> errors)
     {
+        if (value.ValueKind == JsonValueKind.Null)
+        {
+            if (!schema.Nullable)
+                errors.Add($"{path}: valor null pero el esquema no admite null");
+            return;
+        }
+
         switch (schema.Type)
         {
             case "object":

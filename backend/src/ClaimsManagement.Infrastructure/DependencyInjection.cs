@@ -12,8 +12,10 @@ public static class DependencyInjection
     {
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IClaimRepository, InMemoryClaimRepository>();
+        services.AddSingleton<IOnboardingRequestRepository, InMemoryOnboardingRepository>();
         services.AddSingleton<IIdentityVerificationService, DummyIdentityVerificationService>();
         services.AddScoped<ClaimService>();
+        services.AddScoped<OnboardingService>();
         return services;
     }
 }
