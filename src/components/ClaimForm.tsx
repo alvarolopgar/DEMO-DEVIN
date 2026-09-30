@@ -417,7 +417,7 @@ export default function ClaimForm() {
               </div>
 
               <div className={styles.buttonRow}>
-                <Button appearance="secondary" disabled>
+                <Button appearance="secondary" onClick={handleSubmit}>
                   Guardar borrador
                 </Button>
                 <Button
