@@ -13,8 +13,8 @@ Implementación: `src/components/ClaimForm.tsx` (ruta `/claims/new`).
 | UI-001-04 | Success | [Success](https://www.figma.com/design/EDlAb7RBmlokWehf8kUdmB/Devin-demo-Figma?node-id=28-192) | AC-001-14 |
 
 **Renombrado de frames pendiente.** El nombre objetivo de cada frame es `<UI-ID> <Estado>` (p. ej. `UI-001-01 Default`).
-No se pudo renombrar automáticamente: la API de Figma respondió HTTP 401 con los tokens disponibles y el servidor MCP de Figma
-no arrancó. Los `node-id` proceden del historial de la sesión que creó los frames (orden Default, Error, Loading, Success);
+No se pudo renombrar automáticamente: la API de Figma respondió HTTP 401/403 con los tokens disponibles, el servidor MCP de Figma
+no arrancó y, además, la API REST de Figma es de solo lectura para nodos (renombrar exige un plugin de Figma o edición manual). Los `node-id` proceden del historial de la sesión que creó los frames (orden Default, Error, Loading, Success);
 verifíquelos al renombrar. Hasta entonces, esta tabla es el mapeo oficial.
 
 ## UI-001-01 – Default
