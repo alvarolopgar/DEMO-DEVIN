@@ -3,7 +3,10 @@
 
 Comprobaciones:
   (a) Un cambio en backend/** o src/** debe ir acompañado de un cambio en specs/** (solo con --base).
-  (b) Cada AC de cada spec.md tiene >= 1 test y ningún test referencia un AC inexistente.
+  (b) Cada AC de cada spec.md "en implementación" tiene >= 1 test y ningún test referencia un AC
+      inexistente. Una spec está "en implementación" cuando su trace-map.json mapea rutas de código
+      ("code" no vacío) o algún test ya cita uno de sus AC; hasta entonces es una spec previa al
+      desarrollo y no se exige test por AC (ver C-002-10).
       También: cada REQ tiene >= 1 AC, cada AC referencia REQ existentes y cada spec tiene plan.md.
   (c) Lint de specs/*/contracts/openapi.yaml con Redocly (recommended-strict).
   (d) traceability.md regenerado coincide con el commiteado.
@@ -76,7 +79,12 @@ def check_acceptance_coverage() -> list[str]:
 
     tests = collect_tests()
     tested = {ac for t in tests for ac in t.acs}
-    for ac in sorted(defined - tested):
+    under_implementation: set[str] = set()
+    for spec in specs:
+        spec_acs = set(spec.acs)
+        if load_trace_map(spec).get("code") or spec_acs & tested:
+            under_implementation.update(spec_acs)
+    for ac in sorted((defined & under_implementation) - tested):
         errors.append(f"{ac} no tiene ningún test asociado")
 
     for ac, files in sorted(ac_mentions_in_tests().items()):
