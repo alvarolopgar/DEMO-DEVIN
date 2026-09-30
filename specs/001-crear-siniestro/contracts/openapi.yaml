@@ -1,0 +1,197 @@
+openapi: 3.0.3
+info:
+  title: Claims Management API – Crear siniestro auto (KAN-5)
+  version: 1.0.0
+  description: |
+    Contrato de la spec `specs/001-crear-siniestro` (KAN-5). Fuente de verdad de la API (Art. 3 de la constitución).
+    Reglas de negocio: ver `spec.md` (REQ-001-01..10). La fecha del siniestro es una fecha civil (sin hora)
+    y no puede ser posterior al día actual en Europe/Madrid (REQ-001-04, C-001-02).
+  license:
+    name: Propietaria – uso interno
+    url: https://github.com/alvarolopgar/DEMO-DEVIN
+servers:
+  - url: /
+    description: Mismo origen que el servicio desplegado (local, AKS)
+tags:
+  - name: Claims
+    description: Siniestros de auto
+paths:
+  /api/claims:
+    post:
+      tags: [Claims]
+      operationId: createClaim
+      summary: Registra un siniestro de auto en estado Draft
+      description: |
+        REQ-001-01, REQ-001-03, REQ-001-07, REQ-001-08, REQ-001-09.
+        El estado inicial es siempre `Draft`; cualquier propiedad `status` enviada se ignora.
+        Usado tanto por "Guardar borrador" como por "Enviar siniestro" (C-001-03).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClaimRequest'
+            examples:
+              valido:
+                summary: Alta válida
+                value:
+                  policyNumber: POL-2024-001234
+                  claimDate: '2026-01-15'
+                  claimType: Colision
+                  vehiclePlate: 1234 ABC
+                  insuredName: Juan García López
+                  phone: '612345678'
+                  address: Calle Mayor 1, 3ºB
+                  postalCode: '28001'
+                  description: Colisión trasera en semáforo.
+      responses:
+        '201':
+          description: Siniestro registrado en estado Draft (AC-001-01, AC-001-02).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimResponse'
+        '400':
+          description: Datos no válidos (AC-001-04..10, AC-001-16). Formato RFC 7807.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+              examples:
+                validacion:
+                  summary: Errores de negocio
+                  value:
+                    type: https://tools.ietf.org/html/rfc9110#section-15.5.1
+                    title: Validation Error
+                    status: 400
+                    detail: Uno o más campos no son válidos.
+                    errors:
+                      validationErrors:
+                        - La fecha del siniestro no puede ser futura.
+                        - El código postal debe tener exactamente 5 dígitos.
+components:
+  schemas:
+    ClaimType:
+      type: string
+      description: Tipo de siniestro (REQ-001-06). Colision = Colisión.
+      enum: [Colision, Robo, Incendio, Cristales]
+    ClaimStatus:
+      type: string
+      description: |
+        Estado del siniestro. En KAN-5 solo se produce `Draft`; el resto se documenta como referencia
+        para US3 (ver `data-model.md`).
+      enum: [Draft, Submitted, UnderReview, Approved, Rejected]
+    CreateClaimRequest:
+      type: object
+      required:
+        - policyNumber
+        - claimDate
+        - claimType
+        - vehiclePlate
+        - insuredName
+        - phone
+        - address
+        - postalCode
+        - description
+      properties:
+        policyNumber:
+          type: string
+          description: Número de póliza. No vacío ni solo espacios (REQ-001-02).
+        claimDate:
+          type: string
+          format: date
+          description: Fecha civil del siniestro (YYYY-MM-DD). No posterior a hoy en Europe/Madrid (REQ-001-04).
+        claimType:
+          $ref: '#/components/schemas/ClaimType'
+        vehiclePlate:
+          type: string
+        insuredName:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        postalCode:
+          type: string
+          pattern: '^\d{5}$'
+          description: Exactamente 5 dígitos (REQ-001-05).
+        description:
+          type: string
+    ClaimResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - policyNumber
+        - claimDate
+        - claimType
+        - vehiclePlate
+        - insuredName
+        - phone
+        - address
+        - postalCode
+        - description
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        policyNumber:
+          type: string
+        claimDate:
+          type: string
+          description: Fecha del siniestro serializada como fecha-hora sin zona (YYYY-MM-DDT00:00:00).
+          pattern: '^\d{4}-\d{2}-\d{2}T00:00:00$'
+        claimType:
+          $ref: '#/components/schemas/ClaimType'
+        vehiclePlate:
+          type: string
+        insuredName:
+          type: string
+        phone:
+          type: string
+        address:
+          type: string
+        postalCode:
+          type: string
+          pattern: '^\d{5}$'
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/ClaimStatus'
+        createdAt:
+          type: string
+          format: date-time
+          description: Fecha de alta en UTC.
+    ValidationProblemDetails:
+      type: object
+      description: Problem Details (RFC 7807) con errores de validación.
+      required:
+        - title
+        - status
+        - errors
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+          enum: [400]
+        detail:
+          type: string
+        instance:
+          type: string
+        traceId:
+          type: string
+        errors:
+          type: object
+          description: |
+            Mapa campo → mensajes. Los errores de reglas de negocio se agrupan en `validationErrors`;
+            los errores de formato JSON usan la ruta del campo (p. ej. `$.claimType`).
+          additionalProperties:
+            type: array
+            items:
+              type: string

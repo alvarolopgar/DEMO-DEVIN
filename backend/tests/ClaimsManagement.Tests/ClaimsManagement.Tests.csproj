@@ -14,7 +14,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.24" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="Microsoft.OpenApi.Readers" Version="1.6.14" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -27,9 +29,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\specs\001-crear-siniestro\contracts\openapi.yaml" Link="Contract\openapi.yaml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\ClaimsManagement.Domain\ClaimsManagement.Domain.csproj" />
     <ProjectReference Include="..\..\src\ClaimsManagement.Application\ClaimsManagement.Application.csproj" />
     <ProjectReference Include="..\..\src\ClaimsManagement.Infrastructure\ClaimsManagement.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\ClaimsManagement.API\ClaimsManagement.API.csproj" />
   </ItemGroup>
 
 </Project>

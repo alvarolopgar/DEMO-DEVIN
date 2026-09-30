@@ -9,6 +9,10 @@ namespace ClaimsManagement.Tests.Helpers;
 /// </summary>
 public static class TestDataBuilder
 {
+    private static readonly TimeZoneInfo Madrid = TimeZoneInfo.FindSystemTimeZoneById("Europe/Madrid");
+
+    public static DateTime MadridToday => TimeZoneInfo.ConvertTime(DateTimeOffset.UtcNow, Madrid).Date;
+
     public static CreateClaimRequest ValidRequest(
         string? policyNumber = null,
         DateTime? claimDate = null,
@@ -22,7 +26,7 @@ public static class TestDataBuilder
     {
         return new CreateClaimRequest(
             PolicyNumber: policyNumber ?? "POL-2024-001234",
-            ClaimDate: claimDate ?? DateTime.UtcNow.Date.AddDays(-1),
+            ClaimDate: claimDate ?? MadridToday.AddDays(-1),
             ClaimType: claimType ?? ClaimType.Colision,
             VehiclePlate: vehiclePlate ?? "1234 ABC",
             InsuredName: insuredName ?? "Juan García López",

@@ -33,6 +33,8 @@ public class ClaimServiceTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-02")]
+    [Trait("REQ", "REQ-001-03")]
     public async Task CreateClaimAsync_ValidRequest_ShouldReturnResponseWithDraftStatus()
     {
         var request = TestDataBuilder.ValidRequest();
@@ -45,6 +47,8 @@ public class ClaimServiceTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-03")]
+    [Trait("REQ", "REQ-001-07")]
     public async Task CreateClaimAsync_ValidRequest_ShouldReturnNonEmptyId()
     {
         var request = TestDataBuilder.ValidRequest();
@@ -61,6 +65,8 @@ public class ClaimServiceTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-01")]
+    [Trait("REQ", "REQ-001-07")]
     public async Task CreateClaimAsync_ValidRequest_ShouldMapAllFieldsToResponse()
     {
         var request = TestDataBuilder.ValidRequest(
@@ -96,6 +102,8 @@ public class ClaimServiceTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-10")]
+    [Trait("REQ", "REQ-001-09")]
     public async Task CreateClaimAsync_InvalidRequest_ShouldReturnNullResponseWithErrors()
     {
         var request = TestDataBuilder.ValidRequest(policyNumber: "");
@@ -107,10 +115,12 @@ public class ClaimServiceTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-06a")]
+    [Trait("REQ", "REQ-001-04")]
     public async Task CreateClaimAsync_FutureDate_ShouldReturnValidationError()
     {
         var request = TestDataBuilder.ValidRequest(
-            claimDate: DateTime.UtcNow.Date.AddDays(10));
+            claimDate: TestDataBuilder.MadridToday.AddDays(10));
 
         var (response, errors) = await _service.CreateClaimAsync(request);
 
@@ -119,6 +129,8 @@ public class ClaimServiceTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-07b")]
+    [Trait("REQ", "REQ-001-05")]
     public async Task CreateClaimAsync_InvalidPostalCode_ShouldReturnValidationError()
     {
         var request = TestDataBuilder.ValidRequest(postalCode: "123");
@@ -130,11 +142,13 @@ public class ClaimServiceTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-09")]
+    [Trait("REQ", "REQ-001-08")]
     public async Task CreateClaimAsync_MultipleInvalidFields_ShouldReturnAllErrors()
     {
         var request = TestDataBuilder.ValidRequest(
             policyNumber: "",
-            claimDate: DateTime.UtcNow.Date.AddDays(5),
+            claimDate: TestDataBuilder.MadridToday.AddDays(5),
             postalCode: "AB",
             description: "");
 
@@ -150,6 +164,8 @@ public class ClaimServiceTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-11a")]
+    [Trait("REQ", "REQ-001-10")]
     public async Task CreateClaimAsync_ValidRequest_ShouldPersistClaimInRepository()
     {
         var request = TestDataBuilder.ValidRequest();
@@ -164,6 +180,8 @@ public class ClaimServiceTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-10")]
+    [Trait("REQ", "REQ-001-09")]
     public async Task CreateClaimAsync_InvalidRequest_ShouldNotPersistAnything()
     {
         var request = TestDataBuilder.ValidRequest(policyNumber: "");
@@ -179,6 +197,8 @@ public class ClaimServiceTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-03")]
+    [Trait("REQ", "REQ-001-07")]
     public async Task CreateClaimAsync_MultipleClaims_ShouldAllHaveUniqueIds()
     {
         var ids = new HashSet<Guid>();
@@ -203,6 +223,8 @@ public class ClaimServiceTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-01")]
+    [Trait("REQ", "REQ-001-01")]
     public async Task CreateClaimAsync_WithCancellationToken_ShouldStillWork()
     {
         var cts = new CancellationTokenSource();
@@ -212,5 +234,35 @@ public class ClaimServiceTests
 
         Assert.NotNull(response);
         Assert.Empty(errors);
+    }
+
+    [Fact]
+    [Trait("AC", "AC-001-10")]
+    [Trait("REQ", "REQ-001-09")]
+    public async Task CreateClaimAsync_InvalidRequest_ShouldNotCallRepository()
+    {
+        var repository = new RecordingClaimRepository();
+        var service = new ClaimService(repository);
+
+        var (response, errors) = await service.CreateClaimAsync(TestDataBuilder.ValidRequest(postalCode: "1"));
+
+        Assert.Null(response);
+        Assert.NotEmpty(errors);
+        Assert.Equal(0, repository.AddCount);
+    }
+
+    [Fact]
+    [Trait("AC", "AC-001-06b")]
+    [Trait("REQ", "REQ-001-04")]
+    public async Task CreateClaimAsync_TodayInMadridJustAfterMidnight_ShouldCreateClaim()
+    {
+        var service = new ClaimService(_repository, FixedTimeProvider.AtUtc("2026-01-15T23:30:00Z"));
+
+        var (response, errors) = await service.CreateClaimAsync(
+            TestDataBuilder.ValidRequest(claimDate: new DateTime(2026, 1, 16)));
+
+        Assert.Empty(errors);
+        Assert.NotNull(response);
+        Assert.Equal(ClaimStatus.Draft, response.Status);
     }
 }

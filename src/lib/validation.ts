@@ -1,4 +1,5 @@
 import { FormErrors } from "@/types/claim";
+import { isFutureBusinessDate } from "@/lib/businessDate";
 
 export function validateClaimForm(values: {
   policyNumber: string;
@@ -18,13 +19,8 @@ export function validateClaimForm(values: {
 
   if (!values.claimDate) {
     errors.claimDate = "La fecha del siniestro es obligatoria.";
-  } else {
-    const selectedDate = new Date(values.claimDate);
-    const today = new Date();
-    today.setHours(23, 59, 59, 999);
-    if (selectedDate > today) {
-      errors.claimDate = "La fecha del siniestro no puede ser futura.";
-    }
+  } else if (isFutureBusinessDate(values.claimDate)) {
+    errors.claimDate = "La fecha del siniestro no puede ser futura.";
   }
 
   if (!values.vehiclePlate.trim()) {
