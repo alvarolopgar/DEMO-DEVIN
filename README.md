@@ -85,7 +85,8 @@ docs/devin/                     Playbooks SDD para Devin
 - IDs estables, nunca se reutilizan: `REQ-NNN-xx`, `AC-NNN-xx[a-z]`, `UI-NNN-xx`, `NFR-NNN-xx`, `EC-NNN-xx`, `C-NNN-xx`, `T-NNN-xx`.
 - xUnit: `[Trait("AC", "AC-001-06b")]` y `[Trait("REQ", "REQ-001-04")]` en cada test.
 - Vitest: el título del test empieza por el AC, p. ej. `it("AC-001-06b: acepta hoy …")`.
-- El job `spec-conformance` falla si: un PR cambia `backend/**` o `src/**` sin tocar `specs/`; un AC no tiene test;
+- El job `spec-conformance` falla si: un PR cambia `backend/**` o `src/**` sin tocar `specs/`; un AC no tiene test
+  en una spec en implementación (`trace-map.json` con `code` no vacío o con algún test ya existente);
   un test cita un AC inexistente; el contrato OpenAPI no pasa el lint; o `traceability.md` no está regenerado.
 
 ### Cómo crear la spec 002

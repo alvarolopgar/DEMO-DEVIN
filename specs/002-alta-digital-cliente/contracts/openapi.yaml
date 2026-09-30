@@ -1,0 +1,230 @@
+openapi: 3.0.3
+info:
+  title: Onboarding API – Alta digital de cliente (SPEC-002)
+  version: 1.0.0
+  description: |
+    Contrato de la spec `specs/002-alta-digital-cliente` (SPEC-002). Fuente de verdad de la API
+    (Art. 3 de la constitución). Reglas de negocio: ver `spec.md` (REQ-002-01..17).
+    La fecha de nacimiento es una fecha civil (sin hora) y el solicitante debe tener 18 años
+    cumplidos a la fecha de hoy en Europe/Madrid (REQ-002-04).
+  license:
+    name: Propietaria – uso interno
+    url: https://github.com/alvarolopgar/DEMO-DEVIN
+servers:
+  - url: /
+    description: Mismo origen que el servicio desplegado (local, AKS)
+tags:
+  - name: Onboarding
+    description: Alta digital de cliente
+paths:
+  /api/onboarding-requests:
+    post:
+      tags: [Onboarding]
+      operationId: createOnboardingRequest
+      summary: Registra una solicitud de alta en estado PendienteVerificacion
+      description: |
+        REQ-002-01, REQ-002-03, REQ-002-12, REQ-002-13, REQ-002-14, REQ-002-16.
+        El estado inicial es siempre `PendienteVerificacion`; cualquier propiedad `status` enviada
+        se ignora. El número de documento se normaliza (mayúsculas, sin espacios ni guiones)
+        antes de validar y de comprobar duplicados.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOnboardingRequest'
+            examples:
+              valido:
+                summary: Alta válida con DNI
+                value:
+                  firstName: María
+                  lastName: García López
+                  documentType: Dni
+                  documentNumber: '12345678Z'
+                  birthDate: '1990-05-12'
+                  email: maria.garcia@example.com
+                  mobilePhone: '612345678'
+                  acceptsPrivacyPolicy: true
+                  acceptsMarketing: false
+      responses:
+        '201':
+          description: Solicitud registrada en estado PendienteVerificacion (AC-002-01, AC-002-02).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse'
+        '400':
+          description: Datos no válidos (AC-002-04..13, AC-002-18). Formato RFC 7807.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+              examples:
+                validacion:
+                  summary: Errores de negocio
+                  value:
+                    type: https://tools.ietf.org/html/rfc9110#section-15.5.1
+                    title: Validation Error
+                    status: 400
+                    detail: Uno o más campos no son válidos.
+                    errors:
+                      validationErrors:
+                        - Debes ser mayor de edad para darte de alta.
+                        - El correo electrónico no es válido.
+        '409':
+          description: Ya existe una solicitud con ese documento de identidad (AC-002-17a, AC-002-18). Formato RFC 7807.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetails'
+              examples:
+                duplicado:
+                  summary: Documento duplicado
+                  value:
+                    type: https://tools.ietf.org/html/rfc9110#section-15.5.10
+                    title: Conflict
+                    status: 409
+                    detail: Ya existe una solicitud de alta con ese documento de identidad.
+                    errors:
+                      validationErrors:
+                        - Ya existe una solicitud de alta con ese documento de identidad.
+components:
+  schemas:
+    DocumentType:
+      type: string
+      description: |
+        Tipo de documento de identidad (REQ-002-05..07). La regla de formato del número depende
+        del tipo: DNI (8 dígitos + letra de control), NIE (X/Y/Z + 7 dígitos + letra de control),
+        Pasaporte (solo obligatorio).
+      enum: [Dni, Nie, Pasaporte]
+    OnboardingStatus:
+      type: string
+      description: |
+        Estado de la solicitud de alta. En SPEC-002 solo se produce `PendienteVerificacion`;
+        el resto se documenta como referencia para historias posteriores (ver `data-model.md`).
+      enum: [PendienteVerificacion, Verificada, Rechazada, ClienteCreado, Caducada]
+    CreateOnboardingRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - documentType
+        - documentNumber
+        - birthDate
+        - email
+        - mobilePhone
+        - acceptsPrivacyPolicy
+      properties:
+        firstName:
+          type: string
+          description: Nombre. No vacío ni solo espacios (REQ-002-02).
+        lastName:
+          type: string
+          description: Apellidos. No vacío ni solo espacios (REQ-002-02).
+        documentType:
+          $ref: '#/components/schemas/DocumentType'
+        documentNumber:
+          type: string
+          description: |
+            Número de documento. Se normaliza (mayúsculas, sin espacios ni guiones) antes de
+            validar (REQ-002-08). DNI: `^\d{8}[A-Z]$` con letra de control correcta
+            (REQ-002-05). NIE: `^[XYZ]\d{7}[A-Z]$` con letra de control correcta (REQ-002-06).
+            Pasaporte: no vacío (REQ-002-07).
+        birthDate:
+          type: string
+          format: date
+          description: Fecha civil de nacimiento (YYYY-MM-DD). El solicitante debe tener 18 años cumplidos a la fecha de hoy en Europe/Madrid (REQ-002-04).
+        email:
+          type: string
+          format: email
+          description: Correo electrónico con formato válido (REQ-002-09).
+        mobilePhone:
+          type: string
+          pattern: '^[67]\d{8}$'
+          description: Teléfono móvil español, 9 dígitos empezando por 6 o 7 (REQ-002-10).
+        acceptsPrivacyPolicy:
+          type: boolean
+          description: Aceptación de la política de protección de datos. Debe ser `true` (REQ-002-11).
+        acceptsMarketing:
+          type: boolean
+          description: Consentimiento de marketing. Opcional; por defecto `false` (REQ-002-11).
+    OnboardingResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - firstName
+        - lastName
+        - documentType
+        - documentNumber
+        - birthDate
+        - email
+        - mobilePhone
+        - acceptsPrivacyPolicy
+        - acceptsMarketing
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        firstName:
+          type: string
+        lastName:
+          type: string
+        documentType:
+          $ref: '#/components/schemas/DocumentType'
+        documentNumber:
+          type: string
+          description: Número de documento normalizado (mayúsculas, sin espacios ni guiones).
+        birthDate:
+          type: string
+          description: Fecha de nacimiento serializada como fecha-hora sin zona (YYYY-MM-DDT00:00:00).
+          pattern: '^\d{4}-\d{2}-\d{2}T00:00:00$'
+        email:
+          type: string
+          format: email
+        mobilePhone:
+          type: string
+          pattern: '^[67]\d{8}$'
+        acceptsPrivacyPolicy:
+          type: boolean
+        acceptsMarketing:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/OnboardingStatus'
+        createdAt:
+          type: string
+          format: date-time
+          description: Fecha de alta en UTC.
+    ValidationProblemDetails:
+      type: object
+      description: Problem Details (RFC 7807) con errores de validación o conflicto de unicidad.
+      required:
+        - title
+        - status
+        - errors
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+          enum: [400, 409]
+        detail:
+          type: string
+        instance:
+          type: string
+        traceId:
+          type: string
+        errors:
+          type: object
+          description: |
+            Mapa campo → mensajes. Los errores de reglas de negocio se agrupan en `validationErrors`;
+            los errores de formato JSON usan la ruta del campo (p. ej. `$.documentType`).
+          additionalProperties:
+            type: array
+            items:
+              type: string
