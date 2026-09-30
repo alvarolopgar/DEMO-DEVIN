@@ -49,7 +49,8 @@ src/                              Next.js + Fluent UI
 | Lint frontend | `npm run lint` |
 | Tests frontend | `npm test` |
 | Build frontend | `npm run build` |
-| Gate SDD completo (local) | `python3 scripts/sdd/check_spec_conformance.py && python3 scripts/sdd/generate_traceability.py --check && npm run lint:openapi` |
+| Gate SDD completo (local) | `python3 scripts/sdd/check_spec_conformance.py --base origin/<rama-base>` (o `npm run sdd:check`) |
+| Lint del contrato OpenAPI | `npm run lint:openapi` |
 | Regenerar trazabilidad | `python3 scripts/sdd/generate_traceability.py` |
 
 Requisitos locales: .NET SDK 8, Node.js ≥ 22.13, Python 3.10+.

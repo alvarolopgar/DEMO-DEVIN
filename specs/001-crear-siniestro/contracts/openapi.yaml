@@ -10,8 +10,8 @@ info:
     name: Propietaria – uso interno
     url: https://github.com/alvarolopgar/DEMO-DEVIN
 servers:
-  - url: http://localhost:5000
-    description: Desarrollo local
+  - url: /
+    description: Mismo origen que el servicio desplegado (local, AKS)
 tags:
   - name: Claims
     description: Siniestros de auto

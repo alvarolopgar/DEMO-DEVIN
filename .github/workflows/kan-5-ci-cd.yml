@@ -5,11 +5,18 @@ on:
     branches:
       - main
       - init
+      - devin/1772548855-kan5-fullstack
     paths:
       - 'backend/**'
       - 'src/**'
+      - 'specs/**'
+      - 'scripts/sdd/**'
+      - '.specify/**'
       - 'package.json'
       - 'package-lock.json'
+      - 'redocly.yaml'
+      - 'vitest.config.mts'
+      - 'vitest.setup.ts'
       - '.github/workflows/kan-5-ci-cd.yml'
   push:
     branches:
@@ -106,6 +113,45 @@ jobs:
         run: npm run lint
         working-directory: ${{ env.FRONTEND_PATH }}
 
+      - name: Run frontend tests (Vitest)
+        run: npm test
+        working-directory: ${{ env.FRONTEND_PATH }}
+
+  # ═══════════════════════════════════════════════════════════
+  # JOB - SPEC CONFORMANCE: SDD gate (specs/ ↔ tests ↔ contract ↔ traceability)
+  # ═══════════════════════════════════════════════════════════
+  spec-conformance:
+    name: Spec conformance (SDD)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install frontend dependencies (Redocly CLI)
+        run: npm ci
+        working-directory: ${{ env.FRONTEND_PATH }}
+
+      - name: Run SDD conformance gate
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python3 scripts/sdd/check_spec_conformance.py --base "origin/${{ github.base_ref }}"
+          else
+            python3 scripts/sdd/check_spec_conformance.py
+          fi
+
   # ═══════════════════════════════════════════════════════════
   # JOB 3 - SECURITY: Snyk SCA + SAST scans
   # ═══════════════════════════════════════════════════════════
@@ -161,7 +207,7 @@ jobs:
   docker:
     name: Docker Build
     runs-on: ubuntu-latest
-    needs: [test, security]
+    needs: [test, security, spec-conformance]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repository
@@ -193,7 +239,7 @@ jobs:
   deploy:
     name: Deploy to AKS
     runs-on: ubuntu-latest
-    needs: [test, security, docker]
+    needs: [test, security, spec-conformance, docker]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment: production
     steps:
@@ -229,7 +275,8 @@ jobs:
           echo ""
           echo "Pipeline gates passed:"
           echo "  - Build (backend + frontend)"
-          echo "  - Tests (58 xUnit tests)"
+          echo "  - Tests (xUnit + Vitest)"
+          echo "  - Spec conformance (SDD)"
           echo "  - Security (Snyk SCA + SAST)"
           echo "  - Docker image build"
           echo ""

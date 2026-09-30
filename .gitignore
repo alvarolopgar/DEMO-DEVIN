@@ -43,3 +43,6 @@ next-env.d.ts
 # .NET
 **/bin/
 **/obj/
+
+# python
+__pycache__/

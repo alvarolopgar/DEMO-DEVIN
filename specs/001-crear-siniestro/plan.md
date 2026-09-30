@@ -71,13 +71,13 @@ Ver [`ui/states.md`](ui/states.md). Ambos botones invocan el mismo `handleSubmit
 | Nivel | Herramienta | Qué cubre | Ubicación |
 |---|---|---|---|
 | Unitario backend | xUnit | Validador, servicio, entidad, repositorio | `backend/tests/ClaimsManagement.Tests` |
-| Contrato | xUnit + WebApplicationFactory + Microsoft.OpenApi.Readers | Respuestas 201/400 frente a `openapi.yaml` | `backend/tests/ClaimsManagement.ContractTests` |
-| Unitario frontend | Vitest | `validateClaimForm`, `businessDate` | `src/lib/__tests__` |
-| Componente frontend | Vitest + Testing Library + jsdom | Estados UI y acciones | `src/components/__tests__` |
+| Contrato | xUnit + WebApplicationFactory + Microsoft.OpenApi.Readers | Respuestas 201/400, media types, DTOs y enums frente a `openapi.yaml` | `backend/tests/ClaimsManagement.Tests/Contract` |
+| Unitario frontend | Vitest | `validateClaimForm`, `businessDate` | `src/lib/*.test.ts` |
+| Componente frontend | Vitest + Testing Library + jsdom | Estados UI y acciones | `src/components/*.test.tsx` |
 | Conformidad SDD | Python 3 (stdlib) + Redocly | AC ↔ tests, lint contrato, trazabilidad | `scripts/sdd`, job CI `spec-conformance` |
 
 Etiquetado: xUnit `[Trait("AC", "AC-001-xx")]` + `[Trait("REQ", "REQ-001-xx")]`; Vitest `it("AC-001-xx …")`.
-Los tests de fecha inyectan el instante actual (`TimeProvider` en .NET, parámetro `now` en TS) para ser deterministas.
+Los tests de fecha fijan el instante actual (`TimeProvider` en .NET, `vi.setSystemTime` en Vitest, que además se ejecuta con `TZ=UTC` y un caso con `TZ=America/New_York`) para ser deterministas.
 
 ## 8. Decisiones técnicas (ADR ligeras)
 
@@ -90,6 +90,8 @@ Los tests de fecha inyectan el instante actual (`TimeProvider` en .NET, parámet
 | ADR-001-05 | Test de contrato en .NET con validador de esquema mínimo propio | Schemathesis, Dredd, Prism | Sin runtime adicional en CI; se ejecuta en el job `test` existente |
 | ADR-001-06 | Vitest + Testing Library para el frontend | Jest | Soporta TS/ESM sin Babel; configuración mínima |
 | ADR-001-07 | Gate SDD en Python 3 stdlib | Node/TS | Python ya disponible en los runners, sin dependencias |
+| ADR-001-08 | Sin `[Produces("application/json")]` a nivel de controlador; los 400 se sirven como `application/problem+json` | Mantenerlo y cambiar el contrato | RFC 7807 / NFR-001-02; el test de contrato detectó la divergencia |
+| ADR-001-09 | Lint del contrato con Redocly CLI (`recommended-strict`, warnings = error) | Spectral | Un único binario npm fijado en `devDependencies` |
 
 ## 9. Riesgos
 
