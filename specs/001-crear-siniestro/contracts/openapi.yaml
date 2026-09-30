@@ -120,6 +120,7 @@ components:
           type: string
     ClaimResponse:
       type: object
+      additionalProperties: false
       required:
         - id
         - policyNumber
