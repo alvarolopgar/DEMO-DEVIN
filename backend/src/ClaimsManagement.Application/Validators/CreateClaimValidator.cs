@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
+using ClaimsManagement.Application.Common;
 using ClaimsManagement.Application.DTOs;
+using ClaimsManagement.Domain.Enums;
 
 namespace ClaimsManagement.Application.Validators;
 
@@ -7,15 +9,20 @@ public static partial class CreateClaimValidator
 {
     public static List<string> Validate(CreateClaimRequest request, TimeProvider? timeProvider = null)
     {
-        var now = (timeProvider ?? TimeProvider.System).GetUtcNow();
+        var clock = timeProvider ?? TimeProvider.System;
 
         var errors = new List<string>();
 
         if (string.IsNullOrWhiteSpace(request.PolicyNumber))
             errors.Add("El número de póliza es obligatorio.");
 
-        if (request.ClaimDate.Date > now.UtcDateTime.Date)
+        if (request.ClaimDate == default)
+            errors.Add("La fecha del siniestro es obligatoria.");
+        else if (BusinessDate.IsFuture(request.ClaimDate, clock))
             errors.Add("La fecha del siniestro no puede ser futura.");
+
+        if (!Enum.IsDefined(request.ClaimType))
+            errors.Add("El tipo de siniestro no es válido.");
 
         if (string.IsNullOrWhiteSpace(request.VehiclePlate))
             errors.Add("La matrícula del vehículo es obligatoria.");
