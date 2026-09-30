@@ -22,6 +22,8 @@ public class CreateClaimValidatorTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-04")]
+    [Trait("REQ", "REQ-001-01")]
     public void Validate_EmptyPolicyNumber_ShouldReturnError()
     {
         var request = TestDataBuilder.ValidRequest(policyNumber: "");
@@ -30,6 +32,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-05")]
+    [Trait("REQ", "REQ-001-02")]
     public void Validate_WhitespaceOnlyPolicyNumber_ShouldReturnError()
     {
         var request = TestDataBuilder.ValidRequest(policyNumber: "   ");
@@ -38,6 +42,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-04")]
+    [Trait("REQ", "REQ-001-01")]
     public void Validate_EmptyVehiclePlate_ShouldReturnError()
     {
         var request = TestDataBuilder.ValidRequest(vehiclePlate: "");
@@ -46,6 +52,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-04")]
+    [Trait("REQ", "REQ-001-01")]
     public void Validate_EmptyInsuredName_ShouldReturnError()
     {
         var request = TestDataBuilder.ValidRequest(insuredName: "");
@@ -54,6 +62,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-04")]
+    [Trait("REQ", "REQ-001-01")]
     public void Validate_EmptyPhone_ShouldReturnError()
     {
         var request = TestDataBuilder.ValidRequest(phone: "");
@@ -62,6 +72,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-04")]
+    [Trait("REQ", "REQ-001-01")]
     public void Validate_EmptyAddress_ShouldReturnError()
     {
         var request = TestDataBuilder.ValidRequest(address: "");
@@ -70,6 +82,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-04")]
+    [Trait("REQ", "REQ-001-01")]
     public void Validate_EmptyPostalCode_ShouldReturnError()
     {
         var request = TestDataBuilder.ValidRequest(postalCode: "");
@@ -78,6 +92,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-04")]
+    [Trait("REQ", "REQ-001-01")]
     public void Validate_EmptyDescription_ShouldReturnError()
     {
         var request = TestDataBuilder.ValidRequest(description: "");
@@ -86,6 +102,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-05")]
+    [Trait("REQ", "REQ-001-02")]
     public void Validate_WhitespaceOnlyDescription_ShouldReturnError()
     {
         var request = TestDataBuilder.ValidRequest(description: "   \t\n  ");
@@ -100,6 +118,8 @@ public class CreateClaimValidatorTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-06a")]
+    [Trait("REQ", "REQ-001-04")]
     public void Validate_FutureDate_ShouldReturnError()
     {
         var futureDate = DateTime.UtcNow.Date.AddDays(10);
@@ -109,6 +129,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-06a")]
+    [Trait("REQ", "REQ-001-04")]
     public void Validate_DateFarInFuture_ShouldReturnError()
     {
         var futureDate = DateTime.UtcNow.Date.AddYears(1);
@@ -118,6 +140,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-06a")]
+    [Trait("REQ", "REQ-001-04")]
     public void Validate_TomorrowDate_ShouldReturnError()
     {
         var tomorrow = DateTime.UtcNow.Date.AddDays(1);
@@ -127,6 +151,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-06e")]
+    [Trait("REQ", "REQ-001-04")]
     public void Validate_TodayDate_ShouldNotReturnDateError()
     {
         var today = DateTime.UtcNow.Date;
@@ -136,6 +162,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-06e")]
+    [Trait("REQ", "REQ-001-04")]
     public void Validate_YesterdayDate_ShouldNotReturnDateError()
     {
         var yesterday = DateTime.UtcNow.Date.AddDays(-1);
@@ -145,6 +173,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-06e")]
+    [Trait("REQ", "REQ-001-04")]
     public void Validate_DateInDistantPast_ShouldNotReturnDateError()
     {
         var pastDate = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -160,6 +190,8 @@ public class CreateClaimValidatorTests
     // ═══════════════════════════════════════════════════════════
 
     [Theory]
+    [Trait("AC", "AC-001-07b")]
+    [Trait("REQ", "REQ-001-05")]
     [InlineData("1234")]       // 4 digits - too short
     [InlineData("123456")]     // 6 digits - too long
     [InlineData("123")]        // 3 digits
@@ -176,6 +208,8 @@ public class CreateClaimValidatorTests
     }
 
     [Theory]
+    [Trait("AC", "AC-001-07a")]
+    [Trait("REQ", "REQ-001-05")]
     [InlineData("28001")]      // Madrid
     [InlineData("08001")]      // Barcelona - leading zero
     [InlineData("00001")]      // Leading zeros
@@ -196,6 +230,8 @@ public class CreateClaimValidatorTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-09")]
+    [Trait("REQ", "REQ-001-08")]
     public void Validate_AllFieldsEmpty_ShouldReturnMultipleErrors()
     {
         var request = TestDataBuilder.ValidRequest(
@@ -223,6 +259,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-09")]
+    [Trait("REQ", "REQ-001-08")]
     public void Validate_FutureDateAndInvalidPostalCode_ShouldReturnBothErrors()
     {
         var request = TestDataBuilder.ValidRequest(
@@ -240,6 +278,8 @@ public class CreateClaimValidatorTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-01")]
+    [Trait("REQ", "REQ-001-01")]
     public void Validate_ValidRequest_ShouldReturnNoErrors()
     {
         var request = TestDataBuilder.ValidRequest();
@@ -248,6 +288,8 @@ public class CreateClaimValidatorTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-08a")]
+    [Trait("REQ", "REQ-001-06")]
     public void Validate_ValidRequestWithEachClaimType_ShouldReturnNoErrors()
     {
         foreach (var type in Enum.GetValues<ClaimType>())

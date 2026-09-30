@@ -172,12 +172,12 @@ Scenario: A las 23:59:59 en Madrid el día siguiente sigue siendo futuro y el ac
   Then no hay error de fecha
 ```
 
-### AC-001-06e – Fechas pasadas
+### AC-001-06e – Fecha de hoy y fechas pasadas
 REQ: REQ-001-04
 
 ```gherkin
-Scenario: Se aceptan fechas anteriores al día actual
-  Given la fecha del siniestro es ayer o cualquier fecha pasada
+Scenario: Se aceptan el día actual y las fechas anteriores
+  Given la fecha del siniestro es hoy (Europe/Madrid), ayer o cualquier fecha pasada
   When se registra el siniestro
   Then no hay error de fecha
 ```

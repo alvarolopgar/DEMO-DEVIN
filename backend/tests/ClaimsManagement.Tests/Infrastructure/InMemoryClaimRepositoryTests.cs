@@ -25,6 +25,8 @@ public class InMemoryClaimRepositoryTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-11a")]
+    [Trait("REQ", "REQ-001-10")]
     public async Task AddAsync_ValidClaim_ShouldReturnSameClaim()
     {
         var claim = Claim.Create(
@@ -39,6 +41,8 @@ public class InMemoryClaimRepositoryTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-11a")]
+    [Trait("REQ", "REQ-001-10")]
     public async Task AddAsync_ThenGetById_ShouldReturnStoredClaim()
     {
         var claim = Claim.Create(
@@ -61,6 +65,8 @@ public class InMemoryClaimRepositoryTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-11b")]
+    [Trait("REQ", "REQ-001-10")]
     public async Task GetByIdAsync_NonExistentId_ShouldReturnNull()
     {
         var result = await _repository.GetByIdAsync(Guid.NewGuid());
@@ -69,6 +75,8 @@ public class InMemoryClaimRepositoryTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-11b")]
+    [Trait("REQ", "REQ-001-10")]
     public async Task GetByIdAsync_EmptyGuid_ShouldReturnNull()
     {
         var result = await _repository.GetByIdAsync(Guid.Empty);
@@ -81,6 +89,8 @@ public class InMemoryClaimRepositoryTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-11a")]
+    [Trait("REQ", "REQ-001-10")]
     public async Task AddAsync_MultipleClaims_ShouldAllBeRetrievable()
     {
         var claims = new List<Claim>();
@@ -107,6 +117,8 @@ public class InMemoryClaimRepositoryTests
     // ═══════════════════════════════════════════════════════════
 
     [Fact]
+    [Trait("AC", "AC-001-11a")]
+    [Trait("REQ", "REQ-001-10")]
     public async Task AddAsync_ConcurrentAdds_ShouldAllSucceed()
     {
         var tasks = new List<Task<Claim>>();

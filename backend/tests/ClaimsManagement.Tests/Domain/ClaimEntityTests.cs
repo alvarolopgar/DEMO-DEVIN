@@ -17,6 +17,8 @@ public class ClaimEntityTests
     // ─────────────────────────────────────────────────────────
 
     [Fact]
+    [Trait("AC", "AC-001-01")]
+    [Trait("REQ", "REQ-001-01")]
     public void Create_WithValidData_ShouldMapAllFieldsCorrectly()
     {
         // Arrange
@@ -52,6 +54,8 @@ public class ClaimEntityTests
     // ─────────────────────────────────────────────────────────
 
     [Fact]
+    [Trait("AC", "AC-001-02")]
+    [Trait("REQ", "REQ-001-03")]
     public void Create_Always_ShouldSetStatusToDraft()
     {
         // Act
@@ -69,6 +73,8 @@ public class ClaimEntityTests
     // ─────────────────────────────────────────────────────────
 
     [Fact]
+    [Trait("AC", "AC-001-03")]
+    [Trait("REQ", "REQ-001-07")]
     public void Create_Always_ShouldGenerateNonEmptyGuid()
     {
         var claim = Claim.Create(
@@ -80,6 +86,8 @@ public class ClaimEntityTests
     }
 
     [Fact]
+    [Trait("AC", "AC-001-03")]
+    [Trait("REQ", "REQ-001-07")]
     public void Create_CalledTwice_ShouldGenerateDifferentIds()
     {
         var claim1 = Claim.Create(
@@ -100,6 +108,8 @@ public class ClaimEntityTests
     // ─────────────────────────────────────────────────────────
 
     [Fact]
+    [Trait("AC", "AC-001-01")]
+    [Trait("REQ", "REQ-001-07")]
     public void Create_Always_ShouldSetCreatedAtToApproximatelyNow()
     {
         var before = DateTime.UtcNow;
@@ -119,6 +129,8 @@ public class ClaimEntityTests
     // ─────────────────────────────────────────────────────────
 
     [Theory]
+    [Trait("AC", "AC-001-08a")]
+    [Trait("REQ", "REQ-001-06")]
     [InlineData(ClaimType.Colision)]
     [InlineData(ClaimType.Robo)]
     [InlineData(ClaimType.Incendio)]
