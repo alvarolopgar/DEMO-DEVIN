@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <None Include="..\..\..\specs\001-crear-siniestro\contracts\openapi.yaml" Link="Contract\openapi.yaml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\..\specs\002-alta-digital-cliente\contracts\openapi.yaml" Link="Contract\openapi-002.yaml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

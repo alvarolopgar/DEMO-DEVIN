@@ -1,0 +1,148 @@
+{
+ "code": {
+  "REQ-002-01": [
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-02": [
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-03": [
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs"
+  ],
+  "REQ-002-04": [
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-05": [
+   "backend/src/ClaimsManagement.Application/Common/SpanishIdDocument.cs",
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-06": [
+   "backend/src/ClaimsManagement.Application/Common/SpanishIdDocument.cs",
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-07": [
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-08": [
+   "backend/src/ClaimsManagement.Application/Common/SpanishIdDocument.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-09": [
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-10": [
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-11": [
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "src/lib/onboardingValidation.ts"
+  ],
+  "REQ-002-12": [
+   "backend/src/ClaimsManagement.Application/DTOs/OnboardingResponse.cs",
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs"
+  ],
+  "REQ-002-13": [
+   "backend/src/ClaimsManagement.Application/Validators/SubmitOnboardingValidator.cs",
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs",
+   "src/lib/onboardingApi.ts"
+  ],
+  "REQ-002-14": [
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs"
+  ],
+  "REQ-002-15": [
+   "backend/src/ClaimsManagement.Application/Interfaces/IOnboardingRequestRepository.cs",
+   "backend/src/ClaimsManagement.Infrastructure/Repositories/InMemoryOnboardingRepository.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs"
+  ],
+  "REQ-002-16": [
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs",
+   "backend/src/ClaimsManagement.Infrastructure/Repositories/InMemoryOnboardingRepository.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs"
+  ],
+  "REQ-002-17": [
+   "src/components/OnboardingForm.tsx"
+  ],
+  "REQ-002-18": [
+   "backend/src/ClaimsManagement.Application/DTOs/SaveOnboardingDraftRequest.cs",
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs",
+   "src/components/OnboardingForm.tsx"
+  ],
+  "REQ-002-19": [
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs"
+  ],
+  "REQ-002-20": [
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs",
+   "src/lib/onboardingApi.ts"
+  ],
+  "REQ-002-21": [
+   "backend/src/ClaimsManagement.Application/Interfaces/IIdentityVerificationService.cs",
+   "backend/src/ClaimsManagement.Infrastructure/Verification/DummyIdentityVerificationService.cs",
+   "backend/src/ClaimsManagement.Infrastructure/DependencyInjection.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "backend/src/ClaimsManagement.Infrastructure/Verification/SumsubIdentityVerificationService.cs",
+   "backend/src/ClaimsManagement.Infrastructure/Verification/SumsubOptions.cs"
+  ],
+  "REQ-002-22": [
+   "backend/src/ClaimsManagement.Application/Interfaces/IIdentityVerificationService.cs",
+   "backend/src/ClaimsManagement.Infrastructure/Verification/DummyIdentityVerificationService.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs",
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs"
+  ],
+  "REQ-002-23": [
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs"
+  ],
+  "REQ-002-24": [
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs"
+  ],
+  "REQ-002-25": [
+   "backend/src/ClaimsManagement.Domain/Entities/OnboardingRequest.cs",
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs",
+   "backend/src/ClaimsManagement.Application/DTOs/OnboardingError.cs"
+  ],
+  "REQ-002-26": [
+   "backend/src/ClaimsManagement.API/ErrorHandling/ApiExceptionHandler.cs",
+   "backend/src/ClaimsManagement.API/Program.cs"
+  ],
+  "REQ-002-27": [
+   "backend/src/ClaimsManagement.API/Controllers/OnboardingController.cs"
+  ],
+  "REQ-002-28": [
+   "backend/src/ClaimsManagement.Application/Services/OnboardingService.cs",
+   "src/components/OnboardingForm.tsx"
+  ],
+  "REQ-002-29": [
+   "backend/src/ClaimsManagement.Infrastructure/DependencyInjection.cs",
+   "backend/src/ClaimsManagement.Infrastructure/Verification/SumsubIdentityVerificationService.cs",
+   "backend/src/ClaimsManagement.Infrastructure/Verification/SumsubOptions.cs",
+   "backend/src/ClaimsManagement.Infrastructure/Verification/DummyIdentityVerificationService.cs",
+   "backend/src/ClaimsManagement.API/appsettings.json"
+  ]
+ },
+ "figma": {
+  "fileUrl": "https://www.figma.com/design/EDlAb7RBmlokWehf8kUdmB/Devin-demo-Figma",
+  "frames": {}
+ }
+}
