@@ -120,7 +120,7 @@ public class ClaimServiceTests
     public async Task CreateClaimAsync_FutureDate_ShouldReturnValidationError()
     {
         var request = TestDataBuilder.ValidRequest(
-            claimDate: DateTime.UtcNow.Date.AddDays(10));
+            claimDate: TestDataBuilder.MadridToday.AddDays(10));
 
         var (response, errors) = await _service.CreateClaimAsync(request);
 
@@ -148,7 +148,7 @@ public class ClaimServiceTests
     {
         var request = TestDataBuilder.ValidRequest(
             policyNumber: "",
-            claimDate: DateTime.UtcNow.Date.AddDays(5),
+            claimDate: TestDataBuilder.MadridToday.AddDays(5),
             postalCode: "AB",
             description: "");
 
@@ -234,5 +234,35 @@ public class ClaimServiceTests
 
         Assert.NotNull(response);
         Assert.Empty(errors);
+    }
+
+    [Fact]
+    [Trait("AC", "AC-001-10")]
+    [Trait("REQ", "REQ-001-09")]
+    public async Task CreateClaimAsync_InvalidRequest_ShouldNotCallRepository()
+    {
+        var repository = new RecordingClaimRepository();
+        var service = new ClaimService(repository);
+
+        var (response, errors) = await service.CreateClaimAsync(TestDataBuilder.ValidRequest(postalCode: "1"));
+
+        Assert.Null(response);
+        Assert.NotEmpty(errors);
+        Assert.Equal(0, repository.AddCount);
+    }
+
+    [Fact]
+    [Trait("AC", "AC-001-06b")]
+    [Trait("REQ", "REQ-001-04")]
+    public async Task CreateClaimAsync_TodayInMadridJustAfterMidnight_ShouldCreateClaim()
+    {
+        var service = new ClaimService(_repository, FixedTimeProvider.AtUtc("2026-01-15T23:30:00Z"));
+
+        var (response, errors) = await service.CreateClaimAsync(
+            TestDataBuilder.ValidRequest(claimDate: new DateTime(2026, 1, 16)));
+
+        Assert.Empty(errors);
+        Assert.NotNull(response);
+        Assert.Equal(ClaimStatus.Draft, response.Status);
     }
 }
