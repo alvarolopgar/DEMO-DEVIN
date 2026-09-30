@@ -1,9 +1,4 @@
 {
-  "jiraBaseUrl": "https://lopezgarciaalvaro03.atlassian.net/browse/",
-  "jira": {
-    "default": [],
-    "byReq": {}
-  },
   "code": {},
   "figma": {
     "fileUrl": "https://www.figma.com/design/EDlAb7RBmlokWehf8kUdmB/Devin-demo-Figma",

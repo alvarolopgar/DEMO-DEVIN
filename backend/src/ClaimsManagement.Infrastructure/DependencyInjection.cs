@@ -1,6 +1,7 @@
 using ClaimsManagement.Application.Interfaces;
 using ClaimsManagement.Application.Services;
 using ClaimsManagement.Infrastructure.Repositories;
+using ClaimsManagement.Infrastructure.Verification;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ClaimsManagement.Infrastructure;
@@ -11,6 +12,7 @@ public static class DependencyInjection
     {
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IClaimRepository, InMemoryClaimRepository>();
+        services.AddSingleton<IIdentityVerificationService, DummyIdentityVerificationService>();
         services.AddScoped<ClaimService>();
         return services;
     }

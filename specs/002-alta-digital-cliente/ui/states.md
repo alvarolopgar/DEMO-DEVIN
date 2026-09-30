@@ -11,8 +11,14 @@ Implementación prevista: `src/components/OnboardingForm.tsx` (ruta `/onboarding
 | UI-002-01 | Default | _pendiente de crear (T-002-16)_ | AC-002-20 |
 | UI-002-02 | Error | _pendiente de crear (T-002-16)_ | AC-002-20, AC-002-21 |
 | UI-002-03 | Loading | _pendiente de crear (T-002-16)_ | AC-002-19 |
-| UI-002-04 | Success | _pendiente de crear (T-002-16)_ | AC-002-22 |
+| UI-002-04 | Enviada | _pendiente de crear (T-002-16)_ | AC-002-22 |
 | UI-002-05 | Duplicado | _pendiente de crear (T-002-16)_ | AC-002-17a, AC-002-21 |
+| UI-002-06 | Borrador guardado | _pendiente de crear (T-002-16)_ | AC-002-23 |
+| UI-002-07 | Reanudación | _pendiente de crear (T-002-16)_ | AC-002-26 |
+| UI-002-08 | Verificada | _pendiente de crear (T-002-16)_ | AC-002-27 |
+| UI-002-09 | Rechazada | _pendiente de crear (T-002-16)_ | AC-002-28 |
+| UI-002-10 | Completada | _pendiente de crear (T-002-16)_ | AC-002-29 |
+| UI-002-11 | Caducada | _pendiente de crear (T-002-16)_ | AC-002-30, AC-002-31 |
 
 **Frames pendientes.** Aún no existen los frames de esta página en el archivo Figma; el nombre objetivo
 de cada frame es `<UI-ID> <Estado>` (p. ej. `UI-002-01 Default`). La API REST de Figma no permite crear
@@ -29,8 +35,8 @@ hasta entonces, esta tabla es el mapeo oficial.
 - Sección **Contacto**: Correo electrónico*, Teléfono móvil*.
 - Sección **Consentimientos**: casilla obligatoria "He leído y acepto la política de protección de
   datos" y casilla opcional "Quiero recibir comunicaciones comerciales" (REQ-002-11).
-- Acción única **"Solicitar alta"** (primaria, azul de marca). Leyenda bajo el botón:
-  "Tu solicitud quedará pendiente de verificación de identidad."
+- Dos acciones: **"Solicitar alta"** (primaria, azul de marca) y **"Guardar borrador"** (secundaria).
+  Leyenda bajo las acciones: "Puedes guardar tu solicitud y continuarla más tarde."
 
 ## UI-002-02 – Error
 
@@ -42,14 +48,14 @@ hasta entonces, esta tabla es el mapeo oficial.
 ## UI-002-03 – Loading
 
 - Spinner con el texto "Enviando solicitud..." (AC-002-19).
-- El formulario y la acción no se muestran, lo que evita envíos duplicados (EC-002-08).
+- El formulario y las acciones no se muestran, lo que evita envíos duplicados (EC-002-08).
 
-## UI-002-04 – Success
+## UI-002-04 – Enviada
 
 - Icono de confirmación, "Solicitud de alta registrada", "ID: <uuid>" y
   "Estado: PendienteVerificacion" (AC-002-22).
-- Texto informativo del siguiente paso: "Te contactaremos para verificar tu identidad."
-- Acción "Volver al inicio", que vuelve a UI-002-01 con el formulario vacío.
+- Texto informativo del siguiente paso: "El siguiente paso es verificar tu identidad."
+- Acción "Verificar identidad", que invoca `POST /{id}/verify` y lleva a UI-002-08 o UI-002-09.
 
 ## UI-002-05 – Duplicado
 
@@ -58,18 +64,65 @@ hasta entonces, esta tabla es el mapeo oficial.
 - El formulario conserva los valores introducidos y la acción "Solicitar alta" vuelve a estar
   disponible para corregir el dato.
 
+## UI-002-06 – Borrador guardado
+
+- Aviso informativo "Borrador guardado" con el identificador de la solicitud (AC-002-23) y texto
+  "Puedes continuar tu alta más tarde con este identificador."
+- Acción "Continuar más tarde", que sale de la pantalla conservando el borrador.
+- El formulario permanece editable con los datos introducidos.
+
+## UI-002-07 – Reanudación
+
+- Entrada "Continuar con mi solicitud" que pide el identificador del borrador.
+- Tras `GET /{id}`, el formulario (UI-002-01) se muestra **precargado** con los datos guardados
+  (AC-002-26); si el identificador no existe, error "No existe ninguna solicitud con ese
+  identificador."; si caducó, UI-002-11.
+
+## UI-002-08 – Verificada
+
+- Icono de confirmación y mensaje "Identidad verificada correctamente" (AC-002-27).
+- Acción "Completar alta", que invoca `POST /{id}/complete` y lleva a UI-002-10.
+
+## UI-002-09 – Rechazada
+
+- Aviso "No hemos podido verificar tu identidad" con el motivo devuelto por el proveedor
+  (AC-002-28) y texto "Puedes iniciar un alta nueva si lo deseas."
+- Acción "Volver al inicio".
+
+## UI-002-10 – Completada
+
+- Icono de confirmación, "¡Ya eres cliente!", "ID: <uuid>" y "Estado: ClienteCreado" (AC-002-29).
+- Acción "Volver al inicio".
+
+## UI-002-11 – Caducada
+
+- Aviso "La solicitud ha caducado" (AC-002-30, AC-002-31) con texto "Inicia una nueva solicitud de
+  alta." y acción "Volver al inicio".
+
 ## Transiciones
 
 ```mermaid
 stateDiagram-v2
     [*] --> Default
+    [*] --> Reanudacion: Continuar con mi solicitud
+    Reanudacion --> Default: borrador recuperado (precargado)
+    Reanudacion --> Caducada: solicitud caducada
+    Reanudacion --> Reanudacion: identificador inexistente
+    Default --> BorradorGuardado: Guardar borrador (datos parciales)
+    BorradorGuardado --> Default: seguir editando
+    BorradorGuardado --> [*]: Continuar más tarde
     Default --> Error: acción con datos inválidos
     Error --> Error: acción con datos inválidos
-    Default --> Loading: acción con datos válidos
+    Default --> Loading: Solicitar alta con datos válidos
     Error --> Loading: acción con datos válidos
     Duplicado --> Loading: acción con datos corregidos
-    Loading --> Success: 201
+    Loading --> Enviada: submit OK (200)
     Loading --> Error: 400 / error de red
-    Loading --> Duplicado: 409
-    Success --> Default: Volver al inicio
+    Loading --> Duplicado: 409 documento activo
+    Enviada --> Verificada: verificación superada
+    Enviada --> Rechazada: verificación rechazada
+    Verificada --> Completada: Completar alta
+    Completada --> Default: Volver al inicio
+    Rechazada --> Default: Volver al inicio
+    Caducada --> Default: nueva solicitud
 ```

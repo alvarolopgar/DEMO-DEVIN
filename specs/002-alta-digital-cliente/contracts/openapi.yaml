@@ -1,10 +1,18 @@
 openapi: 3.0.3
 info:
   title: Onboarding API – Alta digital de cliente (SPEC-002)
-  version: 1.0.0
+  version: 1.1.0
   description: |
     Contrato de la spec `specs/002-alta-digital-cliente` (SPEC-002). Fuente de verdad de la API
-    (Art. 3 de la constitución). Reglas de negocio: ver `spec.md` (REQ-002-01..17).
+    (Art. 3 de la constitución). Reglas de negocio: ver `spec.md` (REQ-002-01..25).
+
+    Ciclo de vida de la solicitud: `POST /api/onboarding-requests` crea un borrador (se admiten
+    datos parciales); `PATCH /{id}` lo modifica; `GET /{id}` lo recupera (reanudación);
+    `POST /{id}/submit` valida todo y lo envía a PendienteVerificacion; `POST /{id}/verify`
+    ejecuta la verificación de identidad (Verificada | Rechazada); `POST /{id}/complete`
+    crea el expediente del cliente (ClienteCreado). Los borradores y las solicitudes pendientes
+    de verificación caducan a los 30 días (Caducada).
+
     La fecha de nacimiento es una fecha civil (sin hora) y el solicitante debe tener 18 años
     cumplidos a la fecha de hoy en Europe/Madrid (REQ-002-04).
   license:
@@ -20,23 +28,30 @@ paths:
   /api/onboarding-requests:
     post:
       tags: [Onboarding]
-      operationId: createOnboardingRequest
-      summary: Registra una solicitud de alta en estado PendienteVerificacion
+      operationId: createOnboardingDraft
+      summary: Crea una solicitud de alta en estado Borrador
       description: |
-        REQ-002-01, REQ-002-03, REQ-002-12, REQ-002-13, REQ-002-14, REQ-002-16.
-        El estado inicial es siempre `PendienteVerificacion`; cualquier propiedad `status` enviada
-        se ignora. El número de documento se normaliza (mayúsculas, sin espacios ni guiones)
-        antes de validar y de comprobar duplicados.
+        REQ-002-03, REQ-002-12, REQ-002-18.
+        Todos los campos son opcionales: un borrador admite cualquier subconjunto de datos,
+        incluso vacío, sin validación de negocio. El estado inicial es siempre `Borrador`;
+        cualquier propiedad `status` enviada se ignora. El número de documento se normaliza
+        (mayúsculas, sin espacios ni guiones) si se informa.
       security: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOnboardingRequest'
+              $ref: '#/components/schemas/SaveOnboardingDraftRequest'
             examples:
-              valido:
-                summary: Alta válida con DNI
+              parcial:
+                summary: Borrador con datos parciales
+                value:
+                  firstName: María
+                  documentType: Dni
+                  documentNumber: '12345678Z'
+              completo:
+                summary: Borrador con todos los datos
                 value:
                   firstName: María
                   lastName: García López
@@ -49,17 +64,120 @@ paths:
                   acceptsMarketing: false
       responses:
         '201':
-          description: Solicitud registrada en estado PendienteVerificacion (AC-002-01, AC-002-02).
+          description: Borrador creado en estado Borrador (AC-002-02, AC-002-23).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OnboardingResponse'
         '400':
-          description: Datos no válidos (AC-002-04..13, AC-002-18). Formato RFC 7807.
+          description: Cuerpo de la petición mal formado (JSON inválido o tipos incorrectos). Formato RFC 7807.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ValidationProblemDetails'
+                $ref: '#/components/schemas/ProblemDetails'
+  /api/onboarding-requests/{id}:
+    get:
+      tags: [Onboarding]
+      operationId: getOnboardingRequest
+      summary: Recupera una solicitud por su identificador
+      description: |
+        REQ-002-15. Sirve para reanudar un borrador (AC-002-26) y para consultar el estado y el
+        resultado de una solicitud enviada. Si la solicitud ha superado su plazo de caducidad se
+        devuelve en estado Caducada (REQ-002-24).
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/OnboardingId'
+      responses:
+        '200':
+          description: Solicitud encontrada (AC-002-16a).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse'
+        '404':
+          description: No existe ninguna solicitud con ese identificador (AC-002-16b, AC-002-18).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+              examples:
+                noEncontrada:
+                  summary: Identificador inexistente
+                  value:
+                    type: https://tools.ietf.org/html/rfc9110#section-15.5.5
+                    title: Not Found
+                    status: 404
+                    detail: No existe ninguna solicitud de alta con ese identificador.
+    patch:
+      tags: [Onboarding]
+      operationId: updateOnboardingDraft
+      summary: Modifica los datos de un borrador
+      description: |
+        REQ-002-19. Solo aplicable en estado Borrador; actualiza los campos informados y la fecha
+        de modificación. El número de documento se normaliza si se informa.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/OnboardingId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveOnboardingDraftRequest'
+      responses:
+        '200':
+          description: Borrador actualizado (AC-002-24).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse'
+        '404':
+          description: No existe ninguna solicitud con ese identificador.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: La solicitud no está en Borrador (ya enviada o en estado terminal) (AC-002-32).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+              examples:
+                estadoInvalido:
+                  summary: Transición inválida
+                  value:
+                    type: https://tools.ietf.org/html/rfc9110#section-15.5.10
+                    title: Conflict
+                    status: 409
+                    detail: La solicitud ya fue enviada y no puede modificarse.
+  /api/onboarding-requests/{id}/submit:
+    post:
+      tags: [Onboarding]
+      operationId: submitOnboardingRequest
+      summary: Envía un borrador (transición a PendienteVerificacion)
+      description: |
+        REQ-002-13, REQ-002-14, REQ-002-16, REQ-002-20.
+        Aplica toda la validación de negocio sobre los datos acumulados del borrador; si hay
+        errores se devuelven todos a la vez y el borrador no cambia de estado. Si el documento ya
+        tiene una solicitud activa (PendienteVerificacion, Verificada o ClienteCreado) se rechaza
+        con 409.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/OnboardingId'
+      responses:
+        '200':
+          description: Solicitud enviada en estado PendienteVerificacion (AC-002-01, AC-002-22).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse'
+        '400':
+          description: Datos no válidos o incompletos; la solicitud permanece en Borrador (AC-002-04..15, AC-002-25). Formato RFC 7807.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
               examples:
                 validacion:
                   summary: Errores de negocio
@@ -72,12 +190,18 @@ paths:
                       validationErrors:
                         - Debes ser mayor de edad para darte de alta.
                         - El correo electrónico no es válido.
-        '409':
-          description: Ya existe una solicitud con ese documento de identidad (AC-002-17a, AC-002-18). Formato RFC 7807.
+        '404':
+          description: No existe ninguna solicitud con ese identificador.
           content:
             application/problem+json:
               schema:
-                $ref: '#/components/schemas/ValidationProblemDetails'
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Documento con solicitud activa (AC-002-17a) o estado incompatible (AC-002-32). Formato RFC 7807.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
               examples:
                 duplicado:
                   summary: Documento duplicado
@@ -89,7 +213,78 @@ paths:
                     errors:
                       validationErrors:
                         - Ya existe una solicitud de alta con ese documento de identidad.
+  /api/onboarding-requests/{id}/verify:
+    post:
+      tags: [Onboarding]
+      operationId: verifyOnboardingRequest
+      summary: Ejecuta la verificación de identidad
+      description: |
+        REQ-002-21, REQ-002-22. Invoca al proveedor de verificación de identidad
+        (`IIdentityVerificationService`; implementación dummy en esta entrega, C-002-01).
+        Verificación superada → Verificada; rechazada → Rechazada con `rejectionReason`.
+        Un fallo técnico del proveedor deja la solicitud en PendienteVerificacion (NFR-002-10).
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/OnboardingId'
+      responses:
+        '200':
+          description: "Resultado de la verificación (AC-002-27, AC-002-28): `status` Verificada o Rechazada (con `rejectionReason` en el rechazo)."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse'
+        '404':
+          description: No existe ninguna solicitud con ese identificador.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: La solicitud no está en PendienteVerificacion (AC-002-32).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+  /api/onboarding-requests/{id}/complete:
+    post:
+      tags: [Onboarding]
+      operationId: completeOnboardingRequest
+      summary: Completa el alta creando el expediente del cliente
+      description: |
+        REQ-002-23. Solo aplicable en estado Verificada; crea el expediente del cliente y la
+        solicitud pasa a ClienteCreado.
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/OnboardingId'
+      responses:
+        '200':
+          description: Alta completada en estado ClienteCreado (AC-002-29).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingResponse'
+        '404':
+          description: No existe ninguna solicitud con ese identificador.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: La solicitud no está en Verificada (AC-002-32).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
 components:
+  parameters:
+    OnboardingId:
+      name: id
+      in: path
+      required: true
+      description: Identificador de la solicitud de alta.
+      schema:
+        type: string
+        format: uuid
   schemas:
     DocumentType:
       type: string
@@ -101,27 +296,22 @@ components:
     OnboardingStatus:
       type: string
       description: |
-        Estado de la solicitud de alta. En SPEC-002 solo se produce `PendienteVerificacion`;
-        el resto se documenta como referencia para historias posteriores (ver `data-model.md`).
-      enum: [PendienteVerificacion, Verificada, Rechazada, ClienteCreado, Caducada]
-    CreateOnboardingRequest:
+        Estado de la solicitud de alta. Ciclo completo implementado en SPEC-002
+        (ver `data-model.md` para las transiciones válidas).
+      enum: [Borrador, PendienteVerificacion, Verificada, Rechazada, ClienteCreado, Caducada]
+    SaveOnboardingDraftRequest:
       type: object
-      required:
-        - firstName
-        - lastName
-        - documentType
-        - documentNumber
-        - birthDate
-        - email
-        - mobilePhone
-        - acceptsPrivacyPolicy
+      description: |
+        Datos de una solicitud de alta. Todos opcionales: se usan para crear y modificar
+        borradores (REQ-002-18, REQ-002-19); la validación de negocio se aplica en el envío
+        (`POST /{id}/submit`).
       properties:
         firstName:
           type: string
-          description: Nombre. No vacío ni solo espacios (REQ-002-02).
+          description: Nombre. Al enviar, no vacío ni solo espacios (REQ-002-02).
         lastName:
           type: string
-          description: Apellidos. No vacío ni solo espacios (REQ-002-02).
+          description: Apellidos. Al enviar, no vacío ni solo espacios (REQ-002-02).
         documentType:
           $ref: '#/components/schemas/DocumentType'
         documentNumber:
@@ -145,7 +335,7 @@ components:
           description: Teléfono móvil español, 9 dígitos empezando por 6 o 7 (REQ-002-10).
         acceptsPrivacyPolicy:
           type: boolean
-          description: Aceptación de la política de protección de datos. Debe ser `true` (REQ-002-11).
+          description: Aceptación de la política de protección de datos. Debe ser `true` al enviar (REQ-002-11).
         acceptsMarketing:
           type: boolean
           description: Consentimiento de marketing. Opcional; por defecto `false` (REQ-002-11).
@@ -154,42 +344,41 @@ components:
       additionalProperties: false
       required:
         - id
-        - firstName
-        - lastName
-        - documentType
-        - documentNumber
-        - birthDate
-        - email
-        - mobilePhone
-        - acceptsPrivacyPolicy
-        - acceptsMarketing
         - status
         - createdAt
+        - updatedAt
       properties:
         id:
           type: string
           format: uuid
         firstName:
           type: string
+          nullable: true
         lastName:
           type: string
+          nullable: true
         documentType:
           $ref: '#/components/schemas/DocumentType'
         documentNumber:
           type: string
+          nullable: true
           description: Número de documento normalizado (mayúsculas, sin espacios ni guiones).
         birthDate:
           type: string
+          nullable: true
           description: Fecha de nacimiento serializada como fecha-hora sin zona (YYYY-MM-DDT00:00:00).
           pattern: '^\d{4}-\d{2}-\d{2}T00:00:00$'
         email:
           type: string
           format: email
+          nullable: true
         mobilePhone:
           type: string
           pattern: '^[67]\d{8}$'
+          nullable: true
         acceptsPrivacyPolicy:
           type: boolean
+          nullable: true
         acceptsMarketing:
           type: boolean
         status:
@@ -197,14 +386,36 @@ components:
         createdAt:
           type: string
           format: date-time
-          description: Fecha de alta en UTC.
-    ValidationProblemDetails:
+          description: Fecha de creación del borrador en UTC.
+        updatedAt:
+          type: string
+          format: date-time
+          description: Fecha de la última modificación en UTC.
+        submittedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha de envío en UTC; presente desde PendienteVerificacion.
+        verifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha del resultado de verificación en UTC; presente en Verificada/Rechazada.
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha de caducidad en UTC (Borrador/PendienteVerificacion); nula en estados finales.
+        rejectionReason:
+          type: string
+          nullable: true
+          description: Motivo del proveedor cuando la solicitud está Rechazada.
+    ProblemDetails:
       type: object
-      description: Problem Details (RFC 7807) con errores de validación o conflicto de unicidad.
+      description: Problem Details (RFC 7807) para errores de validación, conflicto de unicidad, transición inválida o recurso no encontrado.
       required:
         - title
         - status
-        - errors
       properties:
         type:
           type: string
@@ -212,7 +423,7 @@ components:
           type: string
         status:
           type: integer
-          enum: [400, 409]
+          enum: [400, 404, 409]
         detail:
           type: string
         instance:

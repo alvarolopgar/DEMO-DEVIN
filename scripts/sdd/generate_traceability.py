@@ -29,7 +29,8 @@ def render(spec: Spec, tests: list[TestCase]) -> str:
     figma_url = str(figma_cfg.get("fileUrl", ""))
     frames = figma_cfg.get("frames", {})
 
-    story = str(spec.front_matter.get("jira", ""))
+    has_jira = bool(jira_base or jira_cfg.get("default") or jira_cfg.get("byReq"))
+    story = str(spec.front_matter.get("jira", "") or spec.id)
     aliases = [str(a) for a in spec.front_matter.get("jira_aliases", [])]
     title = str(spec.front_matter.get("title", spec.id))
 
@@ -56,23 +57,24 @@ def render(spec: Spec, tests: list[TestCase]) -> str:
         f"# Trazabilidad – {spec.id} {title} ({story})",
         "",
         f"Historia canónica: **{story}**" + (f" (alias Jira: {', '.join(jira_link(a) for a in aliases)})" if aliases else "") + ".",
-        "Fuentes: `spec.md` (REQ, AC, UI), `trace-map.json` (código, Jira, Figma) y los tests etiquetados",
+        f"Fuentes: `spec.md` (REQ, AC, UI), `trace-map.json` (código{', Jira' if has_jira else ''}, Figma) y los tests etiquetados",
         "(`[Trait(\"AC\", ...)]` en xUnit, títulos `AC-xxx-yy: ...` en Vitest).",
         "",
-        "## REQ → AC → Test → Código → Jira → Figma",
+        f"## REQ → AC → Test → Código{' → Jira' if has_jira else ''} → Figma",
         "",
-        "| REQ | Requisito | AC | Nº tests | Código | Jira | Figma |",
-        "|---|---|---|---|---|---|---|",
+        f"| REQ | Requisito | AC | Nº tests | Código{' | Jira' if has_jira else ''} | Figma |",
+        "|---|---|---|---|---|---|" + ("---|" if has_jira else ""),
     ]
     for req, text in spec.reqs.items():
         acs = acs_by_req.get(req, [])
         n_tests = len({t.label for ac in acs for t in tests_by_ac.get(ac, [])})
         code = [f"`{p}`" for p in code_cfg.get(req, [])]
-        jira = [jira_link(k) for k in [*jira_cfg.get("default", []), *jira_cfg.get("byReq", {}).get(req, [])]]
         uis = sorted(ui for ui, (_, ui_acs) in spec.uis.items() if set(ui_acs) & set(acs))
-        lines.append(
-            f"| {req} | {text} | {_join(acs)} | {n_tests} | {_join(code)} | {_join(jira)} | {_join([figma_link(u) for u in uis])} |"
-        )
+        row = f"| {req} | {text} | {_join(acs)} | {n_tests} | {_join(code)} |"
+        if has_jira:
+            jira = [jira_link(k) for k in [*jira_cfg.get("default", []), *jira_cfg.get("byReq", {}).get(req, [])]]
+            row += f" {_join(jira)} |"
+        lines.append(f"{row} {_join([figma_link(u) for u in uis])} |")
 
     lines += ["", "## AC → Tests", "", "| AC | Título | REQ | Nº tests | Tests |", "|---|---|---|---|---|"]
     for ac_id, ac in spec.acs.items():

@@ -1,7 +1,7 @@
 # DEMO-DEVIN – Gestión de siniestros de auto
 
 Aplicación de demostración para la gestión de siniestros de auto, desarrollada con **Spec-Driven Development (SDD)**.
-La primera historia implementada es **KAN-5 – Crear siniestro auto** (alias Jira DDD-2), especificada en
+La primera historia implementada es **KAN-5 – Crear siniestro auto**, especificada en
 [`specs/001-crear-siniestro/`](specs/001-crear-siniestro/spec.md).
 
 | Capa | Tecnología | Carpeta |
@@ -51,7 +51,7 @@ reglas para agentes (Devin, Copilot…) en [`AGENTS.md`](AGENTS.md).
 | 2 | Clarify | `clarifications.md` (`C-NNN-xx`, decisiones provisionales marcadas) | Sin ambigüedades abiertas sin decisión |
 | 3 | Plan | `plan.md`, `data-model.md`, `contracts/openapi.yaml` | Comprobación de la constitución; `npm run lint:openapi` |
 | 4 | Design | `ui/states.md` con frames Figma nombrados `UI-NNN-xx <Estado>` | Cada estado UI enlazado a AC |
-| 5 | Tasks + Jira | `tasks.md` (`T-NNN-xx` → AC/REQ), historia Jira con AC-IDs | Toda tarea referencia AC/REQ |
+| 5 | Tasks | `tasks.md` (`T-NNN-xx` → AC/REQ) | Toda tarea referencia AC/REQ |
 | 6 | Tests-first | Tests etiquetados con AC, en rojo | Fallan por el motivo esperado |
 | 7 | Implement | Código mínimo hasta verde | `dotnet test`, `npm test` |
 | 8 | Analyze/Verify | `traceability.md` regenerado, PR con CI verde | Job `spec-conformance` |
@@ -74,8 +74,8 @@ specs/
     contracts/openapi.yaml      Contrato de la API
     ui/states.md                Estados UI ↔ frames Figma
     tasks.md                    Tareas atómicas T-001-xx
-    trace-map.json              REQ → código / Jira; UI → nodo Figma
-    traceability.md             GENERADO: REQ → AC → Test → Código → Jira → Figma
+    trace-map.json              REQ → código; UI → nodo Figma
+    traceability.md             GENERADO: REQ → AC → Test → Código → Figma
 scripts/sdd/                    Gate spec-conformance y generador de trazabilidad
 docs/devin/                     Playbooks SDD para Devin
 ```
@@ -92,14 +92,14 @@ docs/devin/                     Playbooks SDD para Devin
 ### Cómo crear la spec 002
 
 1. Crea `specs/002-<slug>/` copiando las plantillas de `.specify/templates/`
-   (`spec-template.md` → `spec.md`, etc.) y rellena el front matter (`spec`, `title`, `jira`).
+   (`spec-template.md` → `spec.md`, etc.) y rellena el front matter (`spec`, `title`).
 2. Escribe `spec.md` con IDs `REQ-002-xx` y `AC-002-xx` (Gherkin, un `### AC-002-xx – Título` por criterio, con línea `REQ:`).
 3. Registra dudas en `clarifications.md` (`C-002-xx`); si no hay respuesta, aplica la opción más conservadora
    marcada como *"Decisión provisional – pendiente de confirmación"*.
 4. Redacta `plan.md` (+ `data-model.md`, `contracts/openapi.yaml`, `ui/states.md` si aplica) y `tasks.md`.
-5. Crea `trace-map.json` (REQ → código y Jira, UI → nodo Figma) y enlaza la historia de Jira con la spec.
+5. Crea `trace-map.json` (REQ → código, UI → nodo Figma).
 6. Escribe los tests etiquetados con `AC-002-xx`, compruébalos en rojo, implementa y déjalos en verde.
 7. Ejecuta `python3 scripts/sdd/generate_traceability.py` y `python3 scripts/sdd/check_spec_conformance.py --base origin/<rama-base>`,
    y abre el PR.
 
-Con Devin: usa el playbook **"SDD – Feature (DEMO-DEVIN)"** indicando la historia de Jira y el número de spec.
+Con Devin: usa el playbook **"SDD – Feature (DEMO-DEVIN)"** indicando el número de spec.
