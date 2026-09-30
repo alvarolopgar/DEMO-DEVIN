@@ -24,12 +24,17 @@ builder.Services.AddSwaggerGen(options =>
 // Clean Architecture DI
 builder.Services.AddInfrastructure();
 
+builder.Services.AddHealthChecks();
+
 // CORS for React frontend
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "http://localhost:3000", "http://localhost:5173" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5173")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -46,5 +51,6 @@ app.UseSwaggerUI(c =>
 
 app.UseCors("AllowFrontend");
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
