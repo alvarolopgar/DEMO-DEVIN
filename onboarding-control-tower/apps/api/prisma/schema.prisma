@@ -1,0 +1,87 @@
+// SPEC-001 – ver specs/001-customer-onboarding-control-tower/data-model.md
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Segment {
+  DIGITAL
+  OFFICE
+  PARTNER
+}
+
+enum Status {
+  STARTED
+  DATA_COMPLETED
+  VERIFYING
+  COMPLETED
+  REJECTED
+  EXPIRED
+}
+
+enum Risk {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum FunnelStage {
+  START
+  DATA
+  VERIFICATION
+  CUSTOMER_CREATED
+}
+
+enum Reason {
+  DOCUMENT_INVALID
+  IDENTITY_FAILED
+  OTHER
+  ABANDONED
+  INCOMPLETE
+}
+
+enum EventType {
+  STARTED
+  DATA_COMPLETED
+  DOCUMENT_VALIDATED
+  IDENTITY_VERIFIED
+  CUSTOMER_CREATED
+}
+
+model OnboardingApplication {
+  id              String            @id
+  segment         Segment
+  status          Status
+  risk            Risk
+  stage           FunnelStage
+  startedAt       DateTime
+  completedAt     DateTime?
+  closedAt        DateTime?
+  durationSec     Int?
+  rejectionReason Reason?
+  events          OnboardingEvent[]
+
+  @@index([startedAt])
+  @@index([segment, startedAt])
+  @@index([status])
+}
+
+model OnboardingEvent {
+  id            Int                   @id @default(autoincrement())
+  applicationId String
+  application   OnboardingApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  type          EventType
+  occurredAt    DateTime
+
+  @@index([applicationId])
+}
+
+model DatasetMeta {
+  id     Int      @id @default(1)
+  anchor DateTime
+  seed   Int
+}

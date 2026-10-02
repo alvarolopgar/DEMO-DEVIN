@@ -1,0 +1,7 @@
+extends:
+  - recommended
+rules:
+  # Demo local (ADR-02): el servidor documentado es localhost.
+  no-server-example.com: off
+  # /api/health no acepta parámetros, por lo que no tiene respuestas 4XX.
+  operation-4xx-response: off

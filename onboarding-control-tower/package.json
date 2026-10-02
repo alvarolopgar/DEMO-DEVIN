@@ -1,0 +1,60 @@
+{
+  "name": "onboarding-control-tower",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Customer Onboarding Control Tower (SPEC-001) – Spec-Driven Development",
+  "type": "module",
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "postinstall": "prisma generate --schema apps/api/prisma/schema.prisma",
+    "setup": "npm ci && npm run db:reset",
+    "db:reset": "npm run db:reset -w apps/api",
+    "dev": "npm run db:ensure && concurrently -k -n api,web -c blue,green \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "build": "npm run build -w apps/api && npm run build -w apps/web",
+    "start": "npm run build && npm run db:ensure && npm run start -w apps/api",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit -p tsconfig.json && npm run typecheck -w apps/api && npm run typecheck -w apps/web",
+    "lint:openapi": "redocly lint specs/*/contracts/openapi.yaml",
+    "test": "npm run test:unit && npm run test:api && npm run test:web && npm run test:sdd",
+    "test:unit": "npm run test:unit -w apps/api",
+    "test:api": "npm run test:api -w apps/api",
+    "test:contract": "npm run test:contract -w apps/api",
+    "test:security": "npm run test:security -w apps/api",
+    "test:web": "npm run test -w apps/web",
+    "test:e2e": "npm run build && playwright test",
+    "sdd:trace": "node scripts/sdd/generate-traceability.mjs",
+    "sdd:check": "node scripts/sdd/spec-conformance.mjs",
+    "verify": "npm run lint && npm run typecheck && npm run lint:openapi && npm test && npm run test:e2e && npm run sdd:check",
+    "gen:types": "openapi-typescript specs/001-customer-onboarding-control-tower/contracts/openapi.yaml -o apps/api/src/generated/openapi.ts && openapi-typescript specs/001-customer-onboarding-control-tower/contracts/openapi.yaml -o apps/web/src/api/generated/openapi.ts",
+    "db:ensure": "npm run db:ensure -w apps/api",
+    "test:sdd": "node --test scripts/sdd/*.test.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@playwright/test": "1.63.0",
+    "@redocly/cli": "2.54.2",
+    "@types/node": "22.20.4",
+    "concurrently": "9.2.4",
+    "eslint": "9.39.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "16.5.0",
+    "openapi-typescript": "7.13.0",
+    "prettier": "3.9.9",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.70.1",
+    "vitest": "4.1.11",
+    "yaml": "2.9.1"
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.2",
+    "vite": "7.3.6"
+  }
+}

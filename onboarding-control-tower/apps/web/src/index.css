@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --color-bg: var(--token-bg);
+  --color-surface: var(--token-surface);
+  --color-border: var(--token-border);
+  --color-ink: var(--token-ink);
+  --color-muted: var(--token-muted);
+  --color-subtle: var(--token-subtle);
+  --color-primary: var(--token-primary);
+  --color-primary-strong: var(--token-primary-strong);
+  --color-primary-soft: var(--token-primary-soft);
+  --color-ok: var(--token-ok);
+  --color-ok-soft: var(--token-ok-soft);
+  --color-ok-ink: var(--token-ok-ink);
+  --color-warn: var(--token-warn);
+  --color-warn-soft: var(--token-warn-soft);
+  --color-warn-ink: var(--token-warn-ink);
+  --color-danger: var(--token-danger);
+  --color-danger-soft: var(--token-danger-soft);
+  --color-danger-ink: var(--token-danger-ink);
+  --color-neutral: var(--token-neutral);
+  --color-neutral-soft: var(--token-neutral-soft);
+  --color-neutral-ink: var(--token-neutral-ink);
+  --font-sans: 'Inter', 'Segoe UI', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+html,
+body {
+  background: var(--token-bg);
+  color: var(--token-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.recharts-wrapper :focus {
+  outline: none;
+}
