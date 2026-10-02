@@ -1,0 +1,654 @@
+openapi: 3.1.0
+info:
+  title: Customer Onboarding Control Tower API
+  version: 1.0.0
+  summary: API de solo lectura del dashboard ejecutivo de onboarding (SPEC-001).
+  description: |
+    Contrato fuente de verdad (Art. 3 de la constitución). Todas las reglas de negocio (SLA, conversión, health,
+    comparativas) se calculan en el servidor; los clientes solo representan los valores y estados recibidos.
+    Los datos son sintéticos y anonimizados (REQ-001-20).
+  license:
+    name: Proprietary – demo
+    identifier: LicenseRef-Demo
+security: []
+servers:
+  - url: http://localhost:3000
+    description: Local
+tags:
+  - name: dashboard
+    description: Agregados del dashboard.
+  - name: applications
+    description: Solicitudes de onboarding.
+  - name: system
+    description: Estado técnico.
+paths:
+  /api/dashboard/summary:
+    get:
+      tags: [dashboard]
+      operationId: getDashboardSummary
+      summary: KPIs, comparativa, SLA, distribución por estado y Health.
+      description: 'REQ-001-01, REQ-001-02, REQ-001-07, REQ-001-09, REQ-001-16, REQ-001-17; BR-001..BR-003, BR-006, BR-007.'
+      parameters:
+        - $ref: '#/components/parameters/Period'
+        - $ref: '#/components/parameters/Segment'
+      responses:
+        '200':
+          description: Resumen del periodo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardSummary'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/dashboard/funnel:
+    get:
+      tags: [dashboard]
+      operationId: getDashboardFunnel
+      summary: Funnel Inicio → Datos → Verificación → Cliente creado.
+      description: 'REQ-001-05; BR-001.'
+      parameters:
+        - $ref: '#/components/parameters/Period'
+        - $ref: '#/components/parameters/Segment'
+      responses:
+        '200':
+          description: Funnel del periodo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Funnel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/dashboard/timeseries:
+    get:
+      tags: [dashboard]
+      operationId: getDashboardTimeseries
+      summary: Evolución de completadas, en curso y rechazadas.
+      description: 'REQ-001-06 (C-001-13).'
+      parameters:
+        - $ref: '#/components/parameters/Period'
+        - $ref: '#/components/parameters/Segment'
+      responses:
+        '200':
+          description: Serie temporal.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timeseries'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/dashboard/reasons:
+    get:
+      tags: [dashboard]
+      operationId: getDashboardReasons
+      summary: Causas de abandono o rechazo ordenadas por volumen.
+      description: 'REQ-001-08 (C-001-10).'
+      parameters:
+        - $ref: '#/components/parameters/Period'
+        - $ref: '#/components/parameters/Segment'
+      responses:
+        '200':
+          description: Causas del periodo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reasons'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/applications:
+    get:
+      tags: [applications]
+      operationId: listApplications
+      summary: Últimas solicitudes del filtro actual (más recientes primero).
+      description: 'REQ-001-12, REQ-001-13; BR-004, BR-005.'
+      parameters:
+        - $ref: '#/components/parameters/Period'
+        - $ref: '#/components/parameters/Segment'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        '200':
+          description: Listado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/applications/{id}:
+    get:
+      tags: [applications]
+      operationId: getApplication
+      summary: Detalle y timeline de una solicitud.
+      description: 'REQ-001-14, REQ-001-15.'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ApplicationId'
+      responses:
+        '200':
+          description: Detalle.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDetail'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /api/health:
+    get:
+      tags: [system]
+      operationId: getHealth
+      summary: Health técnico del servicio.
+      responses:
+        '200':
+          description: Servicio operativo.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceHealth'
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  parameters:
+    Period:
+      name: period
+      in: query
+      required: false
+      description: 'Ventana móvil hasta el instante de referencia (C-001-01).'
+      schema:
+        $ref: '#/components/schemas/Period'
+    Segment:
+      name: segment
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/SegmentFilter'
+  responses:
+    BadRequest:
+      description: Parámetros inválidos.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NotFound:
+      description: Recurso inexistente.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    InternalError:
+      description: Error inesperado (sin detalles internos).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+  schemas:
+    Period:
+      type: string
+      enum: [today, 7d, 30d]
+      default: 30d
+    SegmentFilter:
+      type: string
+      enum: [ALL, DIGITAL, OFFICE, PARTNER]
+      default: ALL
+    Segment:
+      type: string
+      enum: [DIGITAL, OFFICE, PARTNER]
+    Status:
+      type: string
+      enum: [STARTED, DATA_COMPLETED, VERIFYING, COMPLETED, REJECTED, EXPIRED]
+    Risk:
+      type: string
+      enum: [LOW, MEDIUM, HIGH]
+    SlaStatus:
+      type: string
+      description: 'WITHIN ≤ 240 s, WARNING 241–300 s, BREACHED > 300 s; NOT_EVALUATED para rechazadas/caducadas (C-001-16).'
+      enum: [WITHIN, WARNING, BREACHED, NOT_EVALUATED]
+    HealthLight:
+      type: string
+      enum: [GREEN, AMBER, RED, NO_DATA]
+    FunnelStage:
+      type: string
+      enum: [START, DATA, VERIFICATION, CUSTOMER_CREATED]
+    Reason:
+      type: string
+      enum: [DOCUMENT_INVALID, IDENTITY_FAILED, OTHER, ABANDONED, INCOMPLETE]
+    EventType:
+      type: string
+      enum: [STARTED, DATA_COMPLETED, DOCUMENT_VALIDATED, IDENTITY_VERIFIED, CUSTOMER_CREATED]
+    ApplicationId:
+      type: string
+      pattern: '^CL-[0-9]{5}$'
+      examples: [CL-10481]
+    Percentage:
+      type: [number, 'null']
+      minimum: 0
+      maximum: 100
+    DateRange:
+      type: object
+      additionalProperties: false
+      required: [from, to]
+      properties:
+        from:
+          type: string
+          format: date-time
+        to:
+          type: string
+          format: date-time
+    FilterEcho:
+      type: object
+      required: [period, segment, referenceNow, range, previousRange, isEmpty]
+      properties:
+        period:
+          $ref: '#/components/schemas/Period'
+        segment:
+          $ref: '#/components/schemas/SegmentFilter'
+        referenceNow:
+          type: string
+          format: date-time
+          description: 'Instante de referencia de la demo (C-001-02).'
+        range:
+          $ref: '#/components/schemas/DateRange'
+        previousRange:
+          $ref: '#/components/schemas/DateRange'
+        isEmpty:
+          type: boolean
+          description: 'true si el filtro no devuelve solicitudes en el periodo (REQ-001-19).'
+    CountKpi:
+      type: object
+      additionalProperties: false
+      required: [value, previous, deltaPct]
+      properties:
+        value:
+          type: integer
+          minimum: 0
+        previous:
+          type: integer
+          minimum: 0
+        deltaPct:
+          type: [number, 'null']
+          description: 'Variación relativa en %; null si el periodo anterior es 0.'
+    PercentKpi:
+      type: object
+      additionalProperties: false
+      required: [value, previous, deltaPct]
+      properties:
+        value:
+          $ref: '#/components/schemas/Percentage'
+        previous:
+          $ref: '#/components/schemas/Percentage'
+        deltaPct:
+          type: [number, 'null']
+          description: 'Variación en puntos porcentuales (C-001-07).'
+    SlaKpi:
+      type: object
+      additionalProperties: false
+      required: [value, previous, deltaPct, target]
+      properties:
+        value:
+          $ref: '#/components/schemas/Percentage'
+        previous:
+          $ref: '#/components/schemas/Percentage'
+        deltaPct:
+          type: [number, 'null']
+          description: 'Variación en puntos porcentuales (C-001-07).'
+        target:
+          type: number
+          description: 'Objetivo de cumplimiento (95 %).'
+    DurationKpi:
+      type: object
+      additionalProperties: false
+      required: [value, previous, deltaSec]
+      properties:
+        value:
+          type: [number, 'null']
+          minimum: 0
+          description: 'Segundos (BR-002).'
+        previous:
+          type: [number, 'null']
+          minimum: 0
+        deltaSec:
+          type: [number, 'null']
+    SlaSummary:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          thresholdSec,
+          warningSec,
+          targetPct,
+          compliancePct,
+          activeCount,
+          activeWithinCount,
+          activeWithinPct,
+          warningCount,
+          breachedCount,
+        ]
+      properties:
+        thresholdSec:
+          type: integer
+          const: 300
+        warningSec:
+          type: integer
+          const: 240
+        targetPct:
+          type: number
+        compliancePct:
+          $ref: '#/components/schemas/Percentage'
+        activeCount:
+          type: integer
+          minimum: 0
+        activeWithinCount:
+          type: integer
+          minimum: 0
+        activeWithinPct:
+          $ref: '#/components/schemas/Percentage'
+        warningCount:
+          type: integer
+          minimum: 0
+          description: 'Activas próximas a SLA (BR-004).'
+        breachedCount:
+          type: integer
+          minimum: 0
+          description: 'Activas fuera de SLA (BR-005).'
+    StatusCount:
+      type: object
+      additionalProperties: false
+      required: [status, count, pct]
+      properties:
+        status:
+          $ref: '#/components/schemas/Status'
+        count:
+          type: integer
+          minimum: 0
+        pct:
+          $ref: '#/components/schemas/Percentage'
+    VerificationHealth:
+      type: object
+      additionalProperties: false
+      required: [valuePct, previousPct, changePct]
+      properties:
+        valuePct:
+          $ref: '#/components/schemas/Percentage'
+        previousPct:
+          $ref: '#/components/schemas/Percentage'
+        changePct:
+          type: [number, 'null']
+          description: 'Incremento relativo frente al periodo anterior, en %.'
+    ProcessHealth:
+      type: object
+      additionalProperties: false
+      required: [conversion, sla, verification, verificationError, alert]
+      properties:
+        conversion:
+          $ref: '#/components/schemas/HealthLight'
+        sla:
+          $ref: '#/components/schemas/HealthLight'
+        verification:
+          $ref: '#/components/schemas/HealthLight'
+        verificationError:
+          $ref: '#/components/schemas/VerificationHealth'
+        alert:
+          type: [string, 'null']
+          description: 'Mensaje ejecutivo si el error de verificación crece > 20 % (REQ-001-17).'
+    DashboardSummary:
+      allOf:
+        - $ref: '#/components/schemas/FilterEcho'
+        - type: object
+          required: [kpis, sla, statusBreakdown, health]
+          properties:
+            kpis:
+              type: object
+              additionalProperties: false
+              required: [applications, conversionPct, avgDurationSec, slaPct]
+              properties:
+                applications:
+                  $ref: '#/components/schemas/CountKpi'
+                conversionPct:
+                  $ref: '#/components/schemas/PercentKpi'
+                avgDurationSec:
+                  $ref: '#/components/schemas/DurationKpi'
+                slaPct:
+                  $ref: '#/components/schemas/SlaKpi'
+            sla:
+              $ref: '#/components/schemas/SlaSummary'
+            statusBreakdown:
+              type: array
+              minItems: 6
+              maxItems: 6
+              items:
+                $ref: '#/components/schemas/StatusCount'
+            health:
+              $ref: '#/components/schemas/ProcessHealth'
+    FunnelStep:
+      type: object
+      additionalProperties: false
+      required: [stage, count, conversionFromPreviousPct, conversionFromStartPct]
+      properties:
+        stage:
+          $ref: '#/components/schemas/FunnelStage'
+        count:
+          type: integer
+          minimum: 0
+        conversionFromPreviousPct:
+          $ref: '#/components/schemas/Percentage'
+        conversionFromStartPct:
+          $ref: '#/components/schemas/Percentage'
+    Funnel:
+      allOf:
+        - $ref: '#/components/schemas/FilterEcho'
+        - type: object
+          required: [stages, overallConversionPct]
+          properties:
+            stages:
+              type: array
+              minItems: 4
+              maxItems: 4
+              items:
+                $ref: '#/components/schemas/FunnelStep'
+            overallConversionPct:
+              $ref: '#/components/schemas/Percentage'
+    TimeseriesPoint:
+      type: object
+      additionalProperties: false
+      required: [bucketStart, completed, inProgress, rejected]
+      properties:
+        bucketStart:
+          type: string
+          format: date-time
+        completed:
+          type: integer
+          minimum: 0
+        inProgress:
+          type: integer
+          minimum: 0
+        rejected:
+          type: integer
+          minimum: 0
+    Timeseries:
+      allOf:
+        - $ref: '#/components/schemas/FilterEcho'
+        - type: object
+          required: [granularity, points]
+          properties:
+            granularity:
+              type: string
+              enum: [hour, day]
+            points:
+              type: array
+              items:
+                $ref: '#/components/schemas/TimeseriesPoint'
+    ReasonCount:
+      type: object
+      additionalProperties: false
+      required: [reason, kind, count, pct]
+      properties:
+        reason:
+          $ref: '#/components/schemas/Reason'
+        kind:
+          type: string
+          enum: [REJECTION, ABANDONMENT]
+        count:
+          type: integer
+          minimum: 0
+        pct:
+          $ref: '#/components/schemas/Percentage'
+    Reasons:
+      allOf:
+        - $ref: '#/components/schemas/FilterEcho'
+        - type: object
+          required: [totalIncidents, reasons]
+          properties:
+            totalIncidents:
+              type: integer
+              minimum: 0
+            reasons:
+              type: array
+              description: 'Ordenadas por volumen descendente; solo causas con count > 0.'
+              items:
+                $ref: '#/components/schemas/ReasonCount'
+    ApplicationSummary:
+      type: object
+      additionalProperties: false
+      required: [id, segment, status, risk, startedAt, elapsedSec, slaStatus]
+      properties:
+        id:
+          $ref: '#/components/schemas/ApplicationId'
+        segment:
+          $ref: '#/components/schemas/Segment'
+        status:
+          $ref: '#/components/schemas/Status'
+        risk:
+          $ref: '#/components/schemas/Risk'
+        startedAt:
+          type: string
+          format: date-time
+        elapsedSec:
+          type: integer
+          minimum: 0
+        slaStatus:
+          $ref: '#/components/schemas/SlaStatus'
+    ApplicationList:
+      allOf:
+        - $ref: '#/components/schemas/FilterEcho'
+        - type: object
+          required: [items]
+          properties:
+            items:
+              type: array
+              maxItems: 50
+              items:
+                $ref: '#/components/schemas/ApplicationSummary'
+    TimelineEvent:
+      type: object
+      additionalProperties: false
+      required: [type, occurredAt, offsetSec]
+      properties:
+        type:
+          $ref: '#/components/schemas/EventType'
+        occurredAt:
+          type: string
+          format: date-time
+        offsetSec:
+          type: integer
+          minimum: 0
+          description: 'Segundos desde el inicio de la solicitud.'
+    ApplicationDetail:
+      type: object
+      additionalProperties: false
+      required:
+        [id, segment, status, risk, startedAt, closedAt, elapsedSec, slaStatus, rejectionReason, referenceNow, events]
+      properties:
+        id:
+          $ref: '#/components/schemas/ApplicationId'
+        segment:
+          $ref: '#/components/schemas/Segment'
+        status:
+          $ref: '#/components/schemas/Status'
+        risk:
+          $ref: '#/components/schemas/Risk'
+        startedAt:
+          type: string
+          format: date-time
+        closedAt:
+          type: [string, 'null']
+          format: date-time
+        elapsedSec:
+          type: integer
+          minimum: 0
+        slaStatus:
+          $ref: '#/components/schemas/SlaStatus'
+        rejectionReason:
+          oneOf:
+            - $ref: '#/components/schemas/Reason'
+            - type: 'null'
+        referenceNow:
+          type: string
+          format: date-time
+        events:
+          type: array
+          description: 'Orden cronológico ascendente (AC-001-07).'
+          items:
+            $ref: '#/components/schemas/TimelineEvent'
+    ServiceHealth:
+      type: object
+      additionalProperties: false
+      required: [status, database, referenceNow, version]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        database:
+          type: string
+          enum: [ok]
+        referenceNow:
+          type: string
+          format: date-time
+        version:
+          type: string
+    Problem:
+      type: object
+      description: RFC 7807 Problem Details.
+      required: [type, title, status]
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field:
+                type: string
+              message:
+                type: string

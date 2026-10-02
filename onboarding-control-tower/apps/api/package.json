@@ -1,0 +1,36 @@
+{
+  "name": "@oct/api",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "prisma generate",
+    "start": "tsx src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "db:reset": "tsx scripts/db.ts reset",
+    "db:ensure": "tsx scripts/db.ts ensure",
+    "test:unit": "vitest run --project unit",
+    "test:api": "vitest run --project api",
+    "test:contract": "vitest run --project api test/contract",
+    "test:security": "vitest run --project api test/security",
+    "db:empty": "tsx scripts/db.ts empty"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@fastify/cors": "11.3.0",
+    "@fastify/helmet": "13.1.1",
+    "@fastify/static": "10.1.4",
+    "@prisma/client": "6.19.3",
+    "fastify": "5.12.5",
+    "yaml": "2.9.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "prisma": "6.19.3"
+  }
+}
