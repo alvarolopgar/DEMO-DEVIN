@@ -11,8 +11,8 @@
 | AC-001-02 | REQ-001-02, REQ-001-03 | 4 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/contract/openapi.test.ts`<br>`apps/web/src/pages/Dashboard.test.tsx`<br>`tests/acceptance/dashboard.spec.ts` |
 | AC-001-03 | REQ-001-04 | 4 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/contract/openapi.test.ts`<br>`apps/web/src/pages/Dashboard.test.tsx`<br>`tests/acceptance/dashboard.spec.ts` |
 | AC-001-04 | REQ-001-05 | 3 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/unit/funnel.test.ts`<br>`tests/acceptance/dashboard.spec.ts` |
-| AC-001-05 | REQ-001-09, REQ-001-11, REQ-001-13 | 6 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/unit/seed.test.ts`<br>`apps/api/test/unit/sla.test.ts`<br>`apps/web/src/components/Chip.test.tsx`<br>`tests/acceptance/sla-detail.spec.ts` |
-| AC-001-06 | REQ-001-09, REQ-001-10, REQ-001-11, REQ-001-13 | 6 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/unit/seed.test.ts`<br>`apps/api/test/unit/sla.test.ts`<br>`apps/web/src/components/Chip.test.tsx`<br>`tests/acceptance/sla-detail.spec.ts` |
+| AC-001-05 | REQ-001-09, REQ-001-11, REQ-001-13 | 7 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/unit/seed.test.ts`<br>`apps/api/test/unit/sla.test.ts`<br>`apps/web/src/components/Chip.test.tsx`<br>`apps/web/src/pages/Dashboard.test.tsx`<br>`tests/acceptance/sla-detail.spec.ts` |
+| AC-001-06 | REQ-001-09, REQ-001-10, REQ-001-11, REQ-001-13 | 7 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/unit/seed.test.ts`<br>`apps/api/test/unit/sla.test.ts`<br>`apps/web/src/components/Chip.test.tsx`<br>`apps/web/src/pages/Dashboard.test.tsx`<br>`tests/acceptance/sla-detail.spec.ts` |
 | AC-001-07 | REQ-001-14, REQ-001-15, REQ-001-18 | 6 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/contract/openapi.test.ts`<br>`apps/api/test/unit/seed.test.ts`<br>`apps/web/src/pages/Dashboard.test.tsx`<br>`tests/acceptance/sla-detail.spec.ts` |
 | AC-001-08 | REQ-001-16, REQ-001-17 | 6 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/unit/health.test.ts`<br>`apps/api/test/unit/seed.test.ts`<br>`apps/web/src/pages/Dashboard.test.tsx`<br>`tests/acceptance/sla-detail.spec.ts` |
 | AC-001-09 | REQ-001-19 | 6 | `apps/api/test/api/dashboard.test.ts`<br>`apps/api/test/contract/openapi.test.ts`<br>`apps/web/src/components/KpiCard.test.tsx`<br>`apps/web/src/pages/Dashboard.test.tsx`<br>`tests/acceptance/empty-pii.spec.ts` |
@@ -25,8 +25,8 @@
 | BR-001 | — | `apps/api/src/domain/metrics.ts`<br>`apps/api/src/services/dashboard-service.ts` | `apps/api/test/unit/metrics.test.ts` |
 | BR-002 | — | `apps/api/src/domain/metrics.ts`<br>`apps/api/src/repositories/onboarding-repository.ts` | `apps/api/test/unit/metrics.test.ts` |
 | BR-003 | — | `apps/api/src/domain/sla.ts`<br>`apps/api/src/repositories/onboarding-repository.ts` | `apps/api/test/unit/sla.test.ts` |
-| BR-004 | — | `apps/api/src/domain/sla.ts`<br>`apps/api/src/domain/constants.ts` | `apps/api/test/unit/sla.test.ts` |
-| BR-005 | — | `apps/api/src/domain/sla.ts`<br>`apps/api/src/domain/constants.ts` | `apps/api/test/unit/sla.test.ts` |
+| BR-004 | — | `apps/api/src/domain/sla.ts`<br>`apps/api/src/domain/constants.ts`<br>`apps/api/src/repositories/onboarding-repository.ts`<br>`apps/api/src/services/dashboard-service.ts`<br>`apps/api/src/seed/fixtures.ts`<br>`apps/web/src/components/SlaCard.tsx` | `apps/api/test/unit/sla.test.ts` |
+| BR-005 | — | `apps/api/src/domain/sla.ts`<br>`apps/api/src/domain/constants.ts`<br>`apps/api/src/repositories/onboarding-repository.ts`<br>`apps/api/src/services/dashboard-service.ts`<br>`apps/api/src/seed/fixtures.ts`<br>`apps/web/src/components/SlaCard.tsx` | `apps/api/test/unit/sla.test.ts` |
 | BR-006 | — | `apps/api/src/domain/health.ts`<br>`apps/api/src/repositories/onboarding-repository.ts` | `apps/api/test/unit/health.test.ts` |
 | BR-007 | — | `apps/api/src/domain/period.ts`<br>`apps/api/src/domain/metrics.ts`<br>`apps/api/src/services/dashboard-service.ts` | `apps/api/test/unit/period.test.ts`<br>`apps/api/test/unit/metrics.test.ts` |
 | NFR-001-01 | — | `scripts/sdd/spec-conformance.mjs`<br>`scripts/sdd/lib.mjs` | `scripts/sdd/spec-conformance.test.mjs` |

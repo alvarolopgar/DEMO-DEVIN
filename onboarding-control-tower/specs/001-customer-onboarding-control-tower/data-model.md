@@ -63,7 +63,7 @@ STARTED ──► DATA_COMPLETED ──► VERIFYING ──► COMPLETED
 - ≈ 12.900 solicitudes en los últimos 30 días; Digital ~70 %, Oficina ~20 %, Partner ~10 %.
 - Partner con peor conversión, más rechazos y duraciones mayores.
 - Rechazos por verificación crecientes en el tiempo para que el error de verificación suba > 20 % en 30 y 7 días.
-- Fixtures fijos en los últimos minutos (`CL-10481`…`CL-10510`): ≥ 10 activas próximas a SLA (241–300 s),
-  ≥ 10 activas fuera de SLA (≥ 301 s), `CL-10481` completada con timeline completo, `CL-10483` activa a 4 min 30 s
-  y `CL-10484` activa a 5 min 01 s.
+- Fixtures fijos en los últimos minutos (`CL-10481`…`CL-10510`): ≥ 10 activas próximas a SLA (121–180 s),
+  ≥ 10 activas fuera de SLA (≥ 181 s), `CL-10481` completada con timeline completo, `CL-10483` activa a 2 min 30 s
+  y `CL-10484` activa a 3 min 01 s (C-001-20).
 - Ningún campo de texto libre: no hay nombres, documentos, teléfonos ni correos.

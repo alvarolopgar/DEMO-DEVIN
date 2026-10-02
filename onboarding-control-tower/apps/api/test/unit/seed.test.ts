@@ -100,18 +100,18 @@ describe('Seed determinista (PLAN §11, SPEC §10)', () => {
     }
   });
 
-  test('[AC-001-05] fixtures: CL-10483 activa a 4 min 30 s y ≥ 10 activas próximas a SLA', () => {
+  test('[AC-001-05] fixtures: CL-10483 activa a 2 min 30 s y ≥ 10 activas próximas a SLA', () => {
     const a = ds.applications.find((x) => x.id === 'CL-10483');
     expect(a && isActive(a.status)).toBe(true);
-    expect(a && elapsedSeconds(a, anchor)).toBe(270);
+    expect(a && elapsedSeconds(a, anchor)).toBe(150);
     const warning = ds.applications.filter((x) => classifySla(x.status, elapsedSeconds(x, anchor)) === 'WARNING');
     expect(warning.length).toBeGreaterThanOrEqual(10);
   });
 
-  test('[AC-001-06] fixtures: CL-10484 activa a 5 min 01 s y ≥ 10 activas fuera de SLA', () => {
+  test('[AC-001-06] fixtures: CL-10484 activa a 3 min 01 s y ≥ 10 activas fuera de SLA', () => {
     const a = ds.applications.find((x) => x.id === 'CL-10484');
     expect(a && isActive(a.status)).toBe(true);
-    expect(a && elapsedSeconds(a, anchor)).toBe(301);
+    expect(a && elapsedSeconds(a, anchor)).toBe(181);
     const breached = ds.applications.filter(
       (x) => isActive(x.status) && classifySla(x.status, elapsedSeconds(x, anchor)) === 'BREACHED',
     );

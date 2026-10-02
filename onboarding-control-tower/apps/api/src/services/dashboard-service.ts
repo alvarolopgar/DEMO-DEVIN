@@ -1,4 +1,9 @@
-import { SLA_TARGET_PCT, SLA_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS } from '../domain/constants.js';
+import {
+  ACTIVE_SLA_THRESHOLD_SECONDS,
+  SLA_TARGET_PCT,
+  SLA_THRESHOLD_SECONDS,
+  WARNING_THRESHOLD_SECONDS,
+} from '../domain/constants.js';
 import { buildFunnel } from '../domain/funnel.js';
 import {
   conversionHealth,
@@ -97,6 +102,7 @@ export class DashboardService {
       },
       sla: {
         thresholdSec: SLA_THRESHOLD_SECONDS,
+        activeThresholdSec: ACTIVE_SLA_THRESHOLD_SECONDS,
         warningSec: WARNING_THRESHOLD_SECONDS,
         targetPct: SLA_TARGET_PCT,
         compliancePct: cur.sla,

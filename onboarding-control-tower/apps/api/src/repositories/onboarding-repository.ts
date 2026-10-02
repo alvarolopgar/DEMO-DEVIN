@@ -1,5 +1,5 @@
 import { Prisma, type PrismaClient } from '@prisma/client';
-import { SLA_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS } from '../domain/constants.js';
+import { ACTIVE_SLA_THRESHOLD_SECONDS, SLA_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS } from '../domain/constants.js';
 import type { BucketStatusCount } from '../domain/timeseries.js';
 import {
   ACTIVE_STATUSES,
@@ -87,7 +87,7 @@ export class OnboardingRepository {
   async activeSla(w: Window, now: Date): Promise<ActiveSlaCounts> {
     const base = { ...this.where(w), status: { in: [...ACTIVE_STATUSES] } };
     const warnLimit = new Date(now.getTime() - (WARNING_THRESHOLD_SECONDS + 1) * 1000);
-    const slaLimit = new Date(now.getTime() - (SLA_THRESHOLD_SECONDS + 1) * 1000);
+    const slaLimit = new Date(now.getTime() - (ACTIVE_SLA_THRESHOLD_SECONDS + 1) * 1000);
     const and = (startedAt: Prisma.DateTimeFilter) => ({ AND: [base, { startedAt }] });
     const [total, within, breached] = await Promise.all([
       this.prisma.onboardingApplication.count({ where: base }),

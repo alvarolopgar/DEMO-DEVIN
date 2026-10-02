@@ -28,6 +28,13 @@ describe('Dashboard (UI-001..UI-006)', () => {
     expect(screen.getByTestId('kpi-duration')).toHaveTextContent('3 min 55 s');
   });
 
+  test('[AC-001-05] [AC-001-06] la tarjeta SLA muestra los umbrales recibidos del backend (C-001-20)', async () => {
+    mockFetch();
+    renderWithQuery(<Dashboard />);
+    const card = await screen.findByTestId('sla-card');
+    expect(card).toHaveTextContent('Completadas ≤ 5 min 00 s · activas: próxima > 2 min 00 s, fuera > 3 min 00 s');
+  });
+
   test('[AC-001-08] muestra la alerta ejecutiva (UI-006) y el semáforo Health', async () => {
     mockFetch();
     renderWithQuery(<Dashboard />);

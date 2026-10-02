@@ -134,21 +134,21 @@ describe('API dashboard', () => {
     }
   });
 
-  test('[AC-001-05] CL-10483 (4 min 30 s activa) aparece como próxima a SLA', async () => {
+  test('[AC-001-05] CL-10483 (2 min 30 s activa) aparece como próxima a SLA', async () => {
     const l = await getJson<S['ApplicationList']>(app, '/api/applications');
     const row = l.items.find((i) => i.id === 'CL-10483');
-    expect(row).toMatchObject({ elapsedSec: 270, slaStatus: 'WARNING', status: 'VERIFYING' });
+    expect(row).toMatchObject({ elapsedSec: 150, slaStatus: 'WARNING', status: 'VERIFYING' });
     const s = await getJson<S['DashboardSummary']>(app, '/api/dashboard/summary');
     expect(s.sla.warningCount).toBeGreaterThanOrEqual(10);
   });
 
-  test('[AC-001-06] CL-10484 (5 min 01 s activa) aparece fuera de SLA', async () => {
+  test('[AC-001-06] CL-10484 (3 min 01 s activa) aparece fuera de SLA', async () => {
     const l = await getJson<S['ApplicationList']>(app, '/api/applications');
     const row = l.items.find((i) => i.id === 'CL-10484');
-    expect(row).toMatchObject({ elapsedSec: 301, slaStatus: 'BREACHED' });
+    expect(row).toMatchObject({ elapsedSec: 181, slaStatus: 'BREACHED' });
     const s = await getJson<S['DashboardSummary']>(app, '/api/dashboard/summary');
     expect(s.sla.breachedCount).toBeGreaterThanOrEqual(10);
-    expect(s.sla.thresholdSec).toBe(300);
+    expect(s.sla).toMatchObject({ thresholdSec: 300, activeThresholdSec: 180, warningSec: 120 });
     expect(s.sla.activeWithinPct).toBeCloseTo((s.sla.activeWithinCount / s.sla.activeCount) * 100, 1);
   });
 

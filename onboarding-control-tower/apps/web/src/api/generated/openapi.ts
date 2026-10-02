@@ -162,7 +162,7 @@ export interface components {
         /** @enum {string} */
         Risk: "LOW" | "MEDIUM" | "HIGH";
         /**
-         * @description WITHIN ≤ 240 s, WARNING 241–300 s, BREACHED > 300 s; NOT_EVALUATED para rechazadas/caducadas (C-001-16).
+         * @description Activas: WITHIN ≤ 120 s, WARNING 121–180 s, BREACHED > 180 s. Completadas: WITHIN ≤ 300 s, BREACHED > 300 s. NOT_EVALUATED para rechazadas/caducadas (C-001-16, C-001-20).
          * @enum {string}
          */
         SlaStatus: "WITHIN" | "WARNING" | "BREACHED" | "NOT_EVALUATED";
@@ -223,10 +223,21 @@ export interface components {
             deltaSec: number | null;
         };
         SlaSummary: {
-            /** @constant */
+            /**
+             * @description Umbral SLA de las completadas (REQ-001-10).
+             * @constant
+             */
             thresholdSec: 300;
-            /** @constant */
-            warningSec: 240;
+            /**
+             * @description Una activa por encima de este tiempo está fuera de SLA (BR-005).
+             * @constant
+             */
+            activeThresholdSec: 180;
+            /**
+             * @description Una activa por encima de este tiempo está próxima a SLA (BR-004).
+             * @constant
+             */
+            warningSec: 120;
             targetPct: number;
             compliancePct: components["schemas"]["Percentage"];
             activeCount: number;

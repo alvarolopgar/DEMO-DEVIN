@@ -98,7 +98,7 @@ export function Dashboard() {
           />
           <KpiCard
             id="sla"
-            label="SLA < 5 min"
+            label="SLA"
             value={formatPct(s.kpis.slaPct.value)}
             delta={s.kpis.slaPct.deltaPct === null ? null : formatSignedPp(s.kpis.slaPct.deltaPct)}
             trend={trend(s.kpis.slaPct.deltaPct)}

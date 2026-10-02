@@ -1,4 +1,4 @@
-import { SLA_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS } from './constants.js';
+import { ACTIVE_SLA_THRESHOLD_SECONDS, SLA_THRESHOLD_SECONDS, WARNING_THRESHOLD_SECONDS } from './constants.js';
 import { pct } from './metrics.js';
 import { isActive, type SlaStatus, type Status } from './types.js';
 
@@ -8,11 +8,11 @@ export function elapsedSeconds(app: { startedAt: Date; closedAt: Date | null }, 
   return Math.max(0, Math.floor((end.getTime() - app.startedAt.getTime()) / 1000));
 }
 
-/** BR-003, BR-004, BR-005 */
+/** BR-003, BR-004, BR-005 (C-001-20): completadas contra 300 s; activas contra 120/180 s. */
 export function classifySla(status: Status, elapsedSec: number): SlaStatus {
   if (status === 'COMPLETED') return elapsedSec <= SLA_THRESHOLD_SECONDS ? 'WITHIN' : 'BREACHED';
   if (!isActive(status)) return 'NOT_EVALUATED';
-  if (elapsedSec > SLA_THRESHOLD_SECONDS) return 'BREACHED';
+  if (elapsedSec > ACTIVE_SLA_THRESHOLD_SECONDS) return 'BREACHED';
   if (elapsedSec > WARNING_THRESHOLD_SECONDS) return 'WARNING';
   return 'WITHIN';
 }

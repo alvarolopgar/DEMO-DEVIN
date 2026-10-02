@@ -223,12 +223,26 @@
   },
   "BR-004": {
     "acceptance": [],
-    "code": ["apps/api/src/domain/sla.ts", "apps/api/src/domain/constants.ts"],
+    "code": [
+      "apps/api/src/domain/sla.ts",
+      "apps/api/src/domain/constants.ts",
+      "apps/api/src/repositories/onboarding-repository.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/api/src/seed/fixtures.ts",
+      "apps/web/src/components/SlaCard.tsx"
+    ],
     "tests": ["apps/api/test/unit/sla.test.ts"]
   },
   "BR-005": {
     "acceptance": [],
-    "code": ["apps/api/src/domain/sla.ts", "apps/api/src/domain/constants.ts"],
+    "code": [
+      "apps/api/src/domain/sla.ts",
+      "apps/api/src/domain/constants.ts",
+      "apps/api/src/repositories/onboarding-repository.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/api/src/seed/fixtures.ts",
+      "apps/web/src/components/SlaCard.tsx"
+    ],
     "tests": ["apps/api/test/unit/sla.test.ts"]
   },
   "BR-006": {

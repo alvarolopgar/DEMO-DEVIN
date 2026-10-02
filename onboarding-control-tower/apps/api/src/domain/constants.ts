@@ -1,7 +1,9 @@
-/** REQ-001-10: umbral de SLA de la demo (inicio → cliente creado). */
+/** REQ-001-10: umbral de SLA de las solicitudes completadas (inicio → cliente creado). */
 export const SLA_THRESHOLD_SECONDS = 300;
-/** BR-004: a partir de este tiempo una solicitud activa está próxima a SLA. */
-export const WARNING_THRESHOLD_SECONDS = 240;
+/** BR-005 (C-001-20): por encima de este tiempo una solicitud activa está fuera de SLA. */
+export const ACTIVE_SLA_THRESHOLD_SECONDS = 180;
+/** BR-004 (C-001-20): por encima de este tiempo una solicitud activa está próxima a SLA. */
+export const WARNING_THRESHOLD_SECONDS = 120;
 /** Objetivo de cumplimiento de SLA (SPEC-001 §10). */
 export const SLA_TARGET_PCT = 95;
 /** REQ-001-17: incremento relativo (%) del error de verificación que dispara la alerta. */

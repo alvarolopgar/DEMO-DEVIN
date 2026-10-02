@@ -2,20 +2,20 @@ import { expect, test } from '@playwright/test';
 import { getJson, openDashboard, type ApplicationListBody, type SummaryKpis } from './helpers';
 
 test.describe('SLA, detalle y alerta', () => {
-  test('[AC-001-05] una solicitud activa con 4 min 30 s se marca próxima a SLA en amarillo', async ({ page }) => {
+  test('[AC-001-05] una solicitud activa con 2 min 30 s se marca próxima a SLA en amarillo', async ({ page }) => {
     await openDashboard(page);
     const row = page.getByTestId('row-CL-10483');
     await expect(row).toHaveAttribute('data-sla', 'WARNING');
-    await expect(row).toContainText('4:30');
+    await expect(row).toContainText('2:30');
     const chip = row.getByText('Próxima a SLA');
     await expect(chip).toHaveAttribute('data-tone', 'warn');
   });
 
-  test('[AC-001-06] una solicitud activa con 5 min 01 s se marca fuera de SLA en rojo', async ({ page, request }) => {
+  test('[AC-001-06] una solicitud activa con 3 min 01 s se marca fuera de SLA en rojo', async ({ page, request }) => {
     await openDashboard(page);
     const row = page.getByTestId('row-CL-10484');
     await expect(row).toHaveAttribute('data-sla', 'BREACHED');
-    await expect(row).toContainText('5:01');
+    await expect(row).toContainText('3:01');
     await expect(row.getByText('Fuera de SLA')).toHaveAttribute('data-tone', 'danger');
     const summary = await getJson<SummaryKpis>(request, '/api/dashboard/summary?period=30d&segment=ALL');
     await expect(page.getByTestId('sla-breached')).toHaveText(String(summary.sla.breachedCount));

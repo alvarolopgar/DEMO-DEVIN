@@ -110,8 +110,9 @@ Contrato completo: [`contracts/openapi.yaml`](contracts/openapi.yaml).
 
 | Regla                  | Implementación                                                                                        |
 | ---------------------- | ----------------------------------------------------------------------------------------------------- |
-| SLA                    | `SLA_THRESHOLD_SECONDS = 300` en `apps/api/src/domain/constants.ts`; la UI recibe `sla.thresholdSec`. |
-| Próximo a SLA          | `WARNING_THRESHOLD_SECONDS = 240`.                                                                    |
+| SLA (completadas)      | `SLA_THRESHOLD_SECONDS = 300` en `apps/api/src/domain/constants.ts`; la UI recibe `sla.thresholdSec`. |
+| Fuera de SLA (activas) | `ACTIVE_SLA_THRESHOLD_SECONDS = 180` (BR-005, C-001-20); la UI recibe `sla.activeThresholdSec`.       |
+| Próximo a SLA          | `WARNING_THRESHOLD_SECONDS = 120` (BR-004, C-001-20); la UI recibe `sla.warningSec`.                  |
 | Conversión             | `conversionPct()` en `domain/metrics.ts` sobre datos filtrados.                                       |
 | Comparativa            | `resolvePeriod()` en `domain/period.ts` devuelve ventana actual y previa de igual duración.           |
 | Health                 | Funciones puras `conversionHealth/slaHealth/verificationHealth` (umbrales C-001-06).                  |
@@ -155,7 +156,7 @@ Los gráficos incluyen tooltip, leyenda cuando aplica y valor textual complement
 2. Semilla fija → cada `npm run db:reset` produce exactamente los mismos agregados (anchor + offsets, C-001-02).
 3. Digital ~70 %, Oficina ~20 %, Partner ~10 %.
 4. Partner con peor conversión y mayor error.
-5. ≥ 10 activas entre 4 y 5 min y ≥ 10 por encima de 5 min.
+5. ≥ 10 activas entre 2 y 3 min y ≥ 10 por encima de 3 min (C-001-20).
 6. Solicitudes con timeline completo y otras rechazadas durante verificación.
 7. Sin datos confundibles con PII.
 

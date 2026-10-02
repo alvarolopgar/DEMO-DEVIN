@@ -1,9 +1,9 @@
 ---
 spec: '001'
 title: 'Customer Onboarding Control Tower'
-version: '1.0'
+version: '1.1'
 status: 'implementado'
-source: 'SPEC-001_Customer_Onboarding_Control_Tower_Requisitos.docx (v1.0)'
+source: 'SPEC-001_Customer_Onboarding_Control_Tower_Requisitos.docx (v1.0 + revisión BR-004/BR-005, C-001-20)'
 plan: 'plan.md (PLAN-001 v1.0)'
 ---
 
@@ -57,28 +57,28 @@ Solicitud **activa** = estado Iniciada, DatosCompletados o Verificando (ver C-00
 
 ## 5. Requisitos funcionales
 
-| ID         | Requisito                                                                                                                                             |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| REQ-001-01 | El dashboard muestra cuatro KPIs principales: solicitudes, conversión, tiempo medio de onboarding y cumplimiento de SLA.                              |
-| REQ-001-02 | Cada KPI muestra el valor del periodo seleccionado y su variación frente al periodo inmediatamente anterior equivalente.                              |
-| REQ-001-03 | El usuario puede seleccionar el periodo Hoy, 7 días o 30 días; todas las visualizaciones se actualizan de forma coherente.                            |
-| REQ-001-04 | El usuario puede seleccionar el segmento Todos, Digital, Oficina o Partner; todas las visualizaciones se filtran por el segmento seleccionado.        |
-| REQ-001-05 | Se muestra un funnel con las etapas Inicio, Datos, Verificación y Cliente creado, indicando volumen y conversión entre etapas.                        |
-| REQ-001-06 | Se muestra una gráfica temporal con el número de solicitudes completadas, en curso y rechazadas a lo largo del periodo.                               |
-| REQ-001-07 | Se muestra una distribución de solicitudes por estado mediante una visualización circular o equivalente.                                              |
-| REQ-001-08 | Se muestran las principales causas de abandono o rechazo ordenadas por volumen, con porcentaje sobre el total de incidencias del periodo.             |
-| REQ-001-09 | Se muestra el porcentaje de solicitudes activas dentro de SLA y el número de solicitudes próximas o fuera de SLA.                                     |
-| REQ-001-10 | El umbral inicial de SLA de la demo es de 5 minutos desde el inicio hasta la finalización del onboarding.                                             |
-| REQ-001-11 | Una solicitud activa con más de 5 minutos se considera fuera de SLA; una solicitud activa entre 4 y 5 minutos se considera próxima al incumplimiento. |
-| REQ-001-12 | La pantalla muestra las últimas 20 solicitudes del filtro actual con ID, segmento, estado, tiempo transcurrido y riesgo.                              |
-| REQ-001-13 | La tabla usa codificación visual: verde para completada/bajo, amarillo para en curso/medio y rojo para rechazada, fuera de SLA o riesgo alto.         |
-| REQ-001-14 | Al seleccionar una solicitud se abre un panel lateral con su timeline de eventos y marcas temporales.                                                 |
-| REQ-001-15 | El timeline muestra, cuando existen, los eventos Solicitud iniciada, Datos completados, Documento validado, Identidad verificada y Cliente creado.    |
-| REQ-001-16 | La pantalla muestra un bloque Health del proceso con Conversión, SLA y Error de verificación, cada uno con semáforo visual.                           |
-| REQ-001-17 | Cuando el error de verificación del periodo aumenta más de un 20 % frente al periodo anterior, se muestra una alerta ejecutiva.                       |
-| REQ-001-18 | El dashboard conserva el filtro de periodo y segmento mientras el usuario navega entre la vista principal y el detalle de una solicitud.              |
-| REQ-001-19 | Si un filtro no devuelve datos, la pantalla muestra un estado vacío explícito sin errores de ejecución.                                               |
-| REQ-001-20 | Todos los datos mostrados son sintéticos y anonimizados; ningún campo contiene nombre, documento, teléfono o correo reales.                           |
+| ID         | Requisito                                                                                                                                                                                    |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| REQ-001-01 | El dashboard muestra cuatro KPIs principales: solicitudes, conversión, tiempo medio de onboarding y cumplimiento de SLA.                                                                     |
+| REQ-001-02 | Cada KPI muestra el valor del periodo seleccionado y su variación frente al periodo inmediatamente anterior equivalente.                                                                     |
+| REQ-001-03 | El usuario puede seleccionar el periodo Hoy, 7 días o 30 días; todas las visualizaciones se actualizan de forma coherente.                                                                   |
+| REQ-001-04 | El usuario puede seleccionar el segmento Todos, Digital, Oficina o Partner; todas las visualizaciones se filtran por el segmento seleccionado.                                               |
+| REQ-001-05 | Se muestra un funnel con las etapas Inicio, Datos, Verificación y Cliente creado, indicando volumen y conversión entre etapas.                                                               |
+| REQ-001-06 | Se muestra una gráfica temporal con el número de solicitudes completadas, en curso y rechazadas a lo largo del periodo.                                                                      |
+| REQ-001-07 | Se muestra una distribución de solicitudes por estado mediante una visualización circular o equivalente.                                                                                     |
+| REQ-001-08 | Se muestran las principales causas de abandono o rechazo ordenadas por volumen, con porcentaje sobre el total de incidencias del periodo.                                                    |
+| REQ-001-09 | Se muestra el porcentaje de solicitudes activas dentro de SLA y el número de solicitudes próximas o fuera de SLA.                                                                            |
+| REQ-001-10 | El umbral inicial de SLA de la demo es de 5 minutos desde el inicio hasta la finalización del onboarding (se aplica a las solicitudes completadas, C-001-20).                                |
+| REQ-001-11 | Una solicitud activa con más de 3 minutos se considera fuera de SLA; una solicitud activa entre 2 y 3 minutos se considera próxima al incumplimiento (alineado con BR-004/BR-005, C-001-20). |
+| REQ-001-12 | La pantalla muestra las últimas 20 solicitudes del filtro actual con ID, segmento, estado, tiempo transcurrido y riesgo.                                                                     |
+| REQ-001-13 | La tabla usa codificación visual: verde para completada/bajo, amarillo para en curso/medio y rojo para rechazada, fuera de SLA o riesgo alto.                                                |
+| REQ-001-14 | Al seleccionar una solicitud se abre un panel lateral con su timeline de eventos y marcas temporales.                                                                                        |
+| REQ-001-15 | El timeline muestra, cuando existen, los eventos Solicitud iniciada, Datos completados, Documento validado, Identidad verificada y Cliente creado.                                           |
+| REQ-001-16 | La pantalla muestra un bloque Health del proceso con Conversión, SLA y Error de verificación, cada uno con semáforo visual.                                                                  |
+| REQ-001-17 | Cuando el error de verificación del periodo aumenta más de un 20 % frente al periodo anterior, se muestra una alerta ejecutiva.                                                              |
+| REQ-001-18 | El dashboard conserva el filtro de periodo y segmento mientras el usuario navega entre la vista principal y el detalle de una solicitud.                                                     |
+| REQ-001-19 | Si un filtro no devuelve datos, la pantalla muestra un estado vacío explícito sin errores de ejecución.                                                                                      |
+| REQ-001-20 | Todos los datos mostrados son sintéticos y anonimizados; ningún campo contiene nombre, documento, teléfono o correo reales.                                                                  |
 
 ## 6. Reglas de cálculo
 
@@ -87,8 +87,8 @@ Solicitud **activa** = estado Iniciada, DatosCompletados o Verificando (ver C-00
 | BR-001 | Conversión = solicitudes Completadas / solicitudes Iniciadas × 100.                                              |
 | BR-002 | Tiempo medio = media del tiempo entre Inicio y Cliente creado para solicitudes Completadas.                      |
 | BR-003 | SLA cumplido = solicitudes activas o completadas dentro del umbral / solicitudes evaluables × 100.               |
-| BR-004 | Próxima a SLA = solicitud activa con tiempo > 4 min y ≤ 5 min.                                                   |
-| BR-005 | Fuera de SLA = solicitud activa con tiempo > 5 min.                                                              |
+| BR-004 | Próxima a SLA = solicitud activa con tiempo > 2 min y ≤ 3 min.                                                   |
+| BR-005 | Fuera de SLA = solicitud activa con tiempo > 3 min.                                                              |
 | BR-006 | Error de verificación = solicitudes Rechazadas por verificación / solicitudes que alcanzaron Verificación × 100. |
 | BR-007 | La variación de KPI se compara con un periodo anterior de idéntica duración y mismo segmento.                    |
 
@@ -139,7 +139,7 @@ Then Inicio muestra 1.000 y Cliente creado 780 y la conversión final es 78 %
 REQ: REQ-001-09, REQ-001-11, REQ-001-13
 
 ```gherkin
-Given una solicitud activa lleva 4 min 30 s
+Given una solicitud activa lleva 2 min 30 s
 When se muestra el dashboard
 Then se marca como próxima a SLA con tratamiento amarillo
 ```
@@ -149,7 +149,7 @@ Then se marca como próxima a SLA con tratamiento amarillo
 REQ: REQ-001-09, REQ-001-10, REQ-001-11, REQ-001-13
 
 ```gherkin
-Given una solicitud activa lleva 5 min 01 s
+Given una solicitud activa lleva 3 min 01 s
 When se muestra el dashboard
 Then se marca fuera de SLA con tratamiento rojo
 ```

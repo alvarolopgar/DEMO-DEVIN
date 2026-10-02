@@ -6,7 +6,7 @@ import { formatDuration, formatInt, formatPct } from '../i18n/format';
 import { Card } from './Card';
 import { TONE_TEXT } from './tone';
 
-/** REQ-001-09 / REQ-001-10: cumplimiento SLA y activas dentro, próximas y fuera de SLA. */
+/** REQ-001-09 / REQ-001-10 / BR-004 / BR-005: cumplimiento SLA y activas dentro, próximas y fuera de SLA. */
 export function SlaCard({ summary }: { summary: DashboardSummary }) {
   const { sla } = summary;
   const tone = HEALTH_TONE[summary.health.sla];
@@ -21,7 +21,7 @@ export function SlaCard({ summary }: { summary: DashboardSummary }) {
     <Card
       testId="sla-card"
       title="Cumplimiento SLA"
-      subtitle={`Umbral ${formatDuration(sla.thresholdSec)} · aviso desde ${formatDuration(sla.warningSec)}`}
+      subtitle={`Completadas ≤ ${formatDuration(sla.thresholdSec)} · activas: próxima > ${formatDuration(sla.warningSec)}, fuera > ${formatDuration(sla.activeThresholdSec)}`}
       className="col-span-5"
     >
       <div className="flex items-center gap-6">
