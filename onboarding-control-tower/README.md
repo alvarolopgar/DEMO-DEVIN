@@ -32,6 +32,12 @@ npm start
 Variables opcionales (`apps/api`): `DATABASE_URL`, `PORT`, `HOST`, `CORS_ORIGINS`, `REFERENCE_NOW` (instante de
 referencia; por defecto el `anchor` del seed, 2026-10-01T10:00Z), `SEED`, `SEED_ANCHOR`.
 
+Contenedor y despliegue en AWS ECS Fargate (CloudFormation): ver [`deploy/aws/README.md`](deploy/aws/README.md).
+
+```bash
+docker build -t onboarding-control-tower:local . && docker run --rm -p 3000:3000 onboarding-control-tower:local
+```
+
 ## Calidad y gates
 
 | Comando                | Qué verifica                                                                  |
