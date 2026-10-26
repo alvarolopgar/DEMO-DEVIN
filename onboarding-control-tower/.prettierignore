@@ -1,0 +1,9 @@
+node_modules
+dist
+**/generated/**
+package-lock.json
+playwright-report
+test-results
+*.db
+*.docx
+specs/**/traceability.md

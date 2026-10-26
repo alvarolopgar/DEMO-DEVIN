@@ -1,0 +1,11 @@
+**/node_modules
+**/dist
+**/coverage
+**/*.db
+**/*.db-journal
+playwright-report
+test-results
+tests
+deploy
+.env
+*.docx

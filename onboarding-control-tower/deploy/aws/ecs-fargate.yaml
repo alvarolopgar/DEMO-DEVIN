@@ -1,0 +1,271 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Customer Onboarding Control Tower (SPEC-001) en Amazon ECS Fargate detrás de un Application Load Balancer.
+  Un único contenedor sirve la API (Fastify) y el frontend (React) en el puerto 3000.
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label: { default: Red }
+        Parameters: [VpcId, LoadBalancerSubnetIds, ServiceSubnetIds, AssignPublicIp, AllowedCidr]
+      - Label: { default: Contenedor }
+        Parameters: [ImageUri, ContainerPort, Cpu, Memory, DesiredCount, ReferenceNow]
+      - Label: { default: HTTPS (opcional) }
+        Parameters: [CertificateArn]
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC donde se despliega la aplicación.
+  LoadBalancerSubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Subredes públicas (al menos dos zonas de disponibilidad) para el Application Load Balancer.
+  ServiceSubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: >-
+      Subredes de las tareas ECS. Privadas con NAT (AssignPublicIp=DISABLED) o públicas (AssignPublicIp=ENABLED).
+  AssignPublicIp:
+    Type: String
+    Default: DISABLED
+    AllowedValues: [ENABLED, DISABLED]
+    Description: ENABLED solo si las tareas van en subredes públicas sin NAT (necesario para descargar la imagen de ECR).
+  AllowedCidr:
+    Type: String
+    Default: 0.0.0.0/0
+    AllowedPattern: '^(\d{1,3}\.){3}\d{1,3}/\d{1,2}$'
+    Description: Rango de IPs que puede acceder al balanceador (restríngelo a la red corporativa si es posible).
+  ImageUri:
+    Type: String
+    Description: URI completa de la imagen en ECR, p. ej. 123456789012.dkr.ecr.eu-west-1.amazonaws.com/onboarding-control-tower:1.0.0
+  ContainerPort:
+    Type: Number
+    Default: 3000
+  Cpu:
+    Type: String
+    Default: '512'
+    AllowedValues: ['256', '512', '1024', '2048']
+    Description: Unidades de CPU de la tarea (1024 = 1 vCPU).
+  Memory:
+    Type: String
+    Default: '1024'
+    AllowedValues: ['512', '1024', '2048', '3072', '4096']
+    Description: Memoria de la tarea en MiB (debe ser compatible con la CPU elegida).
+  DesiredCount:
+    Type: Number
+    Default: 1
+    MinValue: 0
+    Description: >-
+      Número de tareas. Cada tarea lleva su propia copia SQLite de solo lectura con el seed determinista, así que
+      escalar horizontalmente es seguro.
+  ReferenceNow:
+    Type: String
+    Default: ''
+    Description: Opcional (ADR-04). Instante ISO 8601 que sobrescribe la referencia temporal de la demo.
+  CertificateArn:
+    Type: String
+    Default: ''
+    Description: Opcional. ARN de un certificado de ACM para servir HTTPS en el puerto 443 (HTTP redirige a HTTPS).
+
+Conditions:
+  HasCertificate: !Not [!Equals [!Ref CertificateArn, '']]
+  HasReferenceNow: !Not [!Equals [!Ref ReferenceNow, '']]
+
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub '${AWS::StackName}-cluster'
+      ClusterSettings:
+        - Name: containerInsights
+          Value: enabled
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/ecs/${AWS::StackName}'
+      RetentionInDays: 30
+
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: ecs-tasks.amazonaws.com }
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: { Service: ecs-tasks.amazonaws.com }
+            Action: sts:AssumeRole
+
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Acceso HTTP/HTTPS al balanceador
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - { IpProtocol: tcp, FromPort: 80, ToPort: 80, CidrIp: !Ref AllowedCidr }
+        - { IpProtocol: tcp, FromPort: 443, ToPort: 443, CidrIp: !Ref AllowedCidr }
+
+  ServiceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Trafico del balanceador a las tareas ECS
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
+          SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Scheme: internet-facing
+      Subnets: !Ref LoadBalancerSubnetIds
+      SecurityGroups: [!Ref LoadBalancerSecurityGroup]
+      LoadBalancerAttributes:
+        - Key: routing.http.drop_invalid_header_fields.enabled
+          Value: 'true'
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !Ref VpcId
+      TargetType: ip
+      Protocol: HTTP
+      Port: !Ref ContainerPort
+      HealthCheckPath: /api/health
+      HealthCheckIntervalSeconds: 15
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 3
+      Matcher: { HttpCode: '200' }
+      TargetGroupAttributes:
+        - Key: deregistration_delay.timeout_seconds
+          Value: '15'
+
+  HttpListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: HTTP
+      DefaultActions: !If
+        - HasCertificate
+        - - Type: redirect
+            RedirectConfig: { Protocol: HTTPS, Port: '443', StatusCode: HTTP_301 }
+        - - Type: forward
+            TargetGroupArn: !Ref TargetGroup
+
+  HttpsListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Condition: HasCertificate
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS13-1-2-2021-06
+      Certificates:
+        - CertificateArn: !Ref CertificateArn
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub '${AWS::StackName}-app'
+      RequiresCompatibilities: [FARGATE]
+      NetworkMode: awsvpc
+      Cpu: !Ref Cpu
+      Memory: !Ref Memory
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      RuntimePlatform:
+        OperatingSystemFamily: LINUX
+        CpuArchitecture: X86_64
+      ContainerDefinitions:
+        - Name: app
+          Image: !Ref ImageUri
+          Essential: true
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+              Protocol: tcp
+          Environment:
+            - { Name: NODE_ENV, Value: production }
+            - { Name: HOST, Value: 0.0.0.0 }
+            - { Name: PORT, Value: !Ref ContainerPort }
+            - { Name: LOG_LEVEL, Value: info }
+            - !If
+              - HasReferenceNow
+              - { Name: REFERENCE_NOW, Value: !Ref ReferenceNow }
+              - !Ref AWS::NoValue
+          HealthCheck:
+            Command:
+              - CMD
+              - node
+              - -e
+              - "fetch('http://127.0.0.1:'+process.env.PORT+'/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+            Interval: 30
+            Timeout: 5
+            Retries: 3
+            StartPeriod: 30
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: app
+
+  Service:
+    Type: AWS::ECS::Service
+    DependsOn: HttpListener
+    Properties:
+      ServiceName: !Sub '${AWS::StackName}-service'
+      Cluster: !Ref Cluster
+      LaunchType: FARGATE
+      TaskDefinition: !Ref TaskDefinition
+      DesiredCount: !Ref DesiredCount
+      HealthCheckGracePeriodSeconds: 60
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 100
+        MaximumPercent: 200
+        DeploymentCircuitBreaker: { Enable: true, Rollback: true }
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: !Ref AssignPublicIp
+          Subnets: !Ref ServiceSubnetIds
+          SecurityGroups: [!Ref ServiceSecurityGroup]
+      LoadBalancers:
+        - ContainerName: app
+          ContainerPort: !Ref ContainerPort
+          TargetGroupArn: !Ref TargetGroup
+
+Outputs:
+  ApplicationUrl:
+    Description: URL pública de la aplicación
+    Value: !If
+      - HasCertificate
+      - !Sub 'https://${LoadBalancer.DNSName}'
+      - !Sub 'http://${LoadBalancer.DNSName}'
+  HealthCheckUrl:
+    Value: !If
+      - HasCertificate
+      - !Sub 'https://${LoadBalancer.DNSName}/api/health'
+      - !Sub 'http://${LoadBalancer.DNSName}/api/health'
+  ClusterName:
+    Value: !Ref Cluster
+  ServiceName:
+    Value: !GetAtt Service.Name
+  LogGroupName:
+    Value: !Ref LogGroup

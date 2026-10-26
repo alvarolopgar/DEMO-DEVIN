@@ -1,0 +1,307 @@
+{
+  "REQ-001-01": {
+    "acceptance": ["AC-001-01"],
+    "code": [
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/web/src/pages/Dashboard.tsx",
+      "apps/web/src/components/KpiCard.tsx"
+    ],
+    "tests": [
+      "apps/api/test/api/dashboard.test.ts",
+      "apps/web/src/components/KpiCard.test.tsx",
+      "tests/acceptance/dashboard.spec.ts"
+    ]
+  },
+  "REQ-001-02": {
+    "acceptance": ["AC-001-02"],
+    "code": [
+      "apps/api/src/domain/metrics.ts",
+      "apps/api/src/domain/period.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/web/src/components/KpiCard.tsx"
+    ],
+    "tests": [
+      "apps/api/test/unit/metrics.test.ts",
+      "apps/api/test/api/dashboard.test.ts",
+      "tests/acceptance/dashboard.spec.ts"
+    ]
+  },
+  "REQ-001-03": {
+    "acceptance": ["AC-001-02"],
+    "code": [
+      "apps/api/src/domain/period.ts",
+      "apps/web/src/hooks/useDashboardFilters.ts",
+      "apps/web/src/components/FilterGroup.tsx",
+      "apps/web/src/components/DashboardHeader.tsx"
+    ],
+    "tests": [
+      "apps/api/test/unit/period.test.ts",
+      "apps/api/test/api/dashboard.test.ts",
+      "apps/web/src/pages/Dashboard.test.tsx",
+      "tests/acceptance/dashboard.spec.ts"
+    ]
+  },
+  "REQ-001-04": {
+    "acceptance": ["AC-001-03"],
+    "code": [
+      "apps/api/src/repositories/onboarding-repository.ts",
+      "apps/api/src/routes/index.ts",
+      "apps/web/src/hooks/useDashboardFilters.ts",
+      "apps/web/src/components/FilterGroup.tsx"
+    ],
+    "tests": [
+      "apps/api/test/api/dashboard.test.ts",
+      "apps/web/src/pages/Dashboard.test.tsx",
+      "tests/acceptance/dashboard.spec.ts"
+    ]
+  },
+  "REQ-001-05": {
+    "acceptance": ["AC-001-01", "AC-001-04"],
+    "code": [
+      "apps/api/src/domain/funnel.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/web/src/components/FunnelChart.tsx"
+    ],
+    "tests": [
+      "apps/api/test/unit/funnel.test.ts",
+      "apps/api/test/api/dashboard.test.ts",
+      "tests/acceptance/dashboard.spec.ts"
+    ]
+  },
+  "REQ-001-06": {
+    "acceptance": ["AC-001-01"],
+    "code": [
+      "apps/api/src/domain/timeseries.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/web/src/components/TrendChart.tsx"
+    ],
+    "tests": [
+      "apps/api/test/unit/timeseries.test.ts",
+      "apps/api/test/api/dashboard.test.ts",
+      "tests/acceptance/dashboard.spec.ts"
+    ]
+  },
+  "REQ-001-07": {
+    "acceptance": ["AC-001-01"],
+    "code": ["apps/api/src/services/dashboard-service.ts", "apps/web/src/components/StatusDonut.tsx"],
+    "tests": ["apps/api/test/api/dashboard.test.ts", "tests/acceptance/dashboard.spec.ts"]
+  },
+  "REQ-001-08": {
+    "acceptance": ["AC-001-01"],
+    "code": [
+      "apps/api/src/domain/reasons.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/web/src/components/ReasonsChart.tsx"
+    ],
+    "tests": [
+      "apps/api/test/unit/reasons.test.ts",
+      "apps/api/test/api/dashboard.test.ts",
+      "tests/acceptance/dashboard.spec.ts"
+    ]
+  },
+  "REQ-001-09": {
+    "acceptance": ["AC-001-01", "AC-001-05", "AC-001-06"],
+    "code": [
+      "apps/api/src/domain/sla.ts",
+      "apps/api/src/repositories/onboarding-repository.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/web/src/components/SlaCard.tsx"
+    ],
+    "tests": [
+      "apps/api/test/unit/sla.test.ts",
+      "apps/api/test/api/dashboard.test.ts",
+      "tests/acceptance/sla-detail.spec.ts"
+    ]
+  },
+  "REQ-001-10": {
+    "acceptance": ["AC-001-06"],
+    "code": ["apps/api/src/domain/constants.ts", "apps/api/src/domain/sla.ts"],
+    "tests": ["apps/api/test/unit/sla.test.ts", "tests/acceptance/sla-detail.spec.ts"]
+  },
+  "REQ-001-11": {
+    "acceptance": ["AC-001-05", "AC-001-06"],
+    "code": ["apps/api/src/domain/sla.ts", "apps/web/src/components/ApplicationsTable.tsx"],
+    "tests": [
+      "apps/api/test/unit/sla.test.ts",
+      "apps/api/test/api/dashboard.test.ts",
+      "tests/acceptance/sla-detail.spec.ts"
+    ]
+  },
+  "REQ-001-12": {
+    "acceptance": ["AC-001-01"],
+    "code": [
+      "apps/api/src/repositories/onboarding-repository.ts",
+      "apps/api/src/routes/index.ts",
+      "apps/web/src/components/ApplicationsTable.tsx"
+    ],
+    "tests": ["apps/api/test/api/dashboard.test.ts", "tests/acceptance/dashboard.spec.ts"]
+  },
+  "REQ-001-13": {
+    "acceptance": ["AC-001-05", "AC-001-06"],
+    "code": ["apps/web/src/design/semantics.ts", "apps/web/src/components/Chip.tsx", "apps/web/src/components/tone.ts"],
+    "tests": ["apps/web/src/components/Chip.test.tsx", "tests/acceptance/sla-detail.spec.ts"]
+  },
+  "REQ-001-14": {
+    "acceptance": ["AC-001-07"],
+    "code": ["apps/web/src/components/ApplicationDrawer.tsx", "apps/api/src/routes/index.ts"],
+    "tests": [
+      "apps/api/test/api/dashboard.test.ts",
+      "apps/web/src/pages/Dashboard.test.tsx",
+      "tests/acceptance/sla-detail.spec.ts"
+    ]
+  },
+  "REQ-001-15": {
+    "acceptance": ["AC-001-07"],
+    "code": ["apps/api/src/repositories/onboarding-repository.ts", "apps/web/src/components/ApplicationDrawer.tsx"],
+    "tests": ["apps/api/test/api/dashboard.test.ts", "tests/acceptance/sla-detail.spec.ts"]
+  },
+  "REQ-001-16": {
+    "acceptance": ["AC-001-01", "AC-001-08"],
+    "code": [
+      "apps/api/src/domain/health.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/web/src/components/HealthPanel.tsx"
+    ],
+    "tests": [
+      "apps/api/test/unit/health.test.ts",
+      "apps/api/test/api/dashboard.test.ts",
+      "tests/acceptance/dashboard.spec.ts",
+      "tests/acceptance/sla-detail.spec.ts"
+    ]
+  },
+  "REQ-001-17": {
+    "acceptance": ["AC-001-08"],
+    "code": [
+      "apps/api/src/domain/health.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/web/src/components/ExecutiveAlert.tsx"
+    ],
+    "tests": [
+      "apps/api/test/unit/health.test.ts",
+      "apps/api/test/api/dashboard.test.ts",
+      "apps/web/src/pages/Dashboard.test.tsx",
+      "tests/acceptance/sla-detail.spec.ts"
+    ]
+  },
+  "REQ-001-18": {
+    "acceptance": ["AC-001-07"],
+    "code": ["apps/web/src/hooks/useDashboardFilters.ts", "apps/web/src/pages/Dashboard.tsx"],
+    "tests": ["apps/web/src/pages/Dashboard.test.tsx", "tests/acceptance/sla-detail.spec.ts"]
+  },
+  "REQ-001-19": {
+    "acceptance": ["AC-001-09"],
+    "code": [
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/web/src/components/EmptyState.tsx",
+      "apps/web/src/pages/Dashboard.tsx"
+    ],
+    "tests": [
+      "apps/api/test/api/dashboard.test.ts",
+      "apps/web/src/pages/Dashboard.test.tsx",
+      "tests/acceptance/empty-pii.spec.ts"
+    ]
+  },
+  "REQ-001-20": {
+    "acceptance": ["AC-001-10"],
+    "code": ["apps/api/src/seed/generate.ts", "apps/api/src/seed/fixtures.ts", "apps/api/prisma/schema.prisma"],
+    "tests": ["apps/api/test/unit/seed.test.ts", "apps/api/test/api/pii.test.ts", "tests/acceptance/empty-pii.spec.ts"]
+  },
+  "BR-001": {
+    "acceptance": [],
+    "code": ["apps/api/src/domain/metrics.ts", "apps/api/src/services/dashboard-service.ts"],
+    "tests": ["apps/api/test/unit/metrics.test.ts"]
+  },
+  "BR-002": {
+    "acceptance": [],
+    "code": ["apps/api/src/domain/metrics.ts", "apps/api/src/repositories/onboarding-repository.ts"],
+    "tests": ["apps/api/test/unit/metrics.test.ts"]
+  },
+  "BR-003": {
+    "acceptance": [],
+    "code": ["apps/api/src/domain/sla.ts", "apps/api/src/repositories/onboarding-repository.ts"],
+    "tests": ["apps/api/test/unit/sla.test.ts"]
+  },
+  "BR-004": {
+    "acceptance": [],
+    "code": [
+      "apps/api/src/domain/sla.ts",
+      "apps/api/src/domain/constants.ts",
+      "apps/api/src/repositories/onboarding-repository.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/api/src/seed/fixtures.ts",
+      "apps/web/src/components/SlaCard.tsx"
+    ],
+    "tests": ["apps/api/test/unit/sla.test.ts"]
+  },
+  "BR-005": {
+    "acceptance": [],
+    "code": [
+      "apps/api/src/domain/sla.ts",
+      "apps/api/src/domain/constants.ts",
+      "apps/api/src/repositories/onboarding-repository.ts",
+      "apps/api/src/services/dashboard-service.ts",
+      "apps/api/src/seed/fixtures.ts",
+      "apps/web/src/components/SlaCard.tsx"
+    ],
+    "tests": ["apps/api/test/unit/sla.test.ts"]
+  },
+  "BR-006": {
+    "acceptance": [],
+    "code": ["apps/api/src/domain/health.ts", "apps/api/src/repositories/onboarding-repository.ts"],
+    "tests": ["apps/api/test/unit/health.test.ts"]
+  },
+  "BR-007": {
+    "acceptance": [],
+    "code": [
+      "apps/api/src/domain/period.ts",
+      "apps/api/src/domain/metrics.ts",
+      "apps/api/src/services/dashboard-service.ts"
+    ],
+    "tests": ["apps/api/test/unit/period.test.ts", "apps/api/test/unit/metrics.test.ts"]
+  },
+  "UI-001": {
+    "acceptance": ["AC-001-01"],
+    "code": ["apps/web/src/components/Skeleton.tsx", "apps/web/src/pages/Dashboard.tsx"],
+    "tests": ["apps/web/src/pages/Dashboard.test.tsx", "tests/acceptance/dashboard.spec.ts"]
+  },
+  "UI-002": {
+    "acceptance": ["AC-001-01", "AC-001-02", "AC-001-03"],
+    "code": ["apps/web/src/pages/Dashboard.tsx"],
+    "tests": ["apps/web/src/pages/Dashboard.test.tsx", "tests/acceptance/dashboard.spec.ts"]
+  },
+  "UI-003": {
+    "acceptance": ["AC-001-09"],
+    "code": ["apps/web/src/components/EmptyState.tsx", "apps/web/src/pages/Dashboard.tsx"],
+    "tests": ["apps/web/src/pages/Dashboard.test.tsx", "tests/acceptance/empty-pii.spec.ts"]
+  },
+  "UI-004": {
+    "acceptance": ["AC-001-01"],
+    "code": ["apps/web/src/components/ErrorState.tsx", "apps/web/src/pages/Dashboard.tsx", "apps/api/src/problem.ts"],
+    "tests": ["apps/web/src/pages/Dashboard.test.tsx", "tests/acceptance/dashboard.spec.ts"]
+  },
+  "UI-005": {
+    "acceptance": ["AC-001-07"],
+    "code": ["apps/web/src/components/ApplicationDrawer.tsx"],
+    "tests": ["apps/web/src/pages/Dashboard.test.tsx", "tests/acceptance/sla-detail.spec.ts"]
+  },
+  "UI-006": {
+    "acceptance": ["AC-001-08"],
+    "code": ["apps/web/src/components/ExecutiveAlert.tsx"],
+    "tests": ["apps/web/src/pages/Dashboard.test.tsx", "tests/acceptance/sla-detail.spec.ts"]
+  },
+  "NFR-001-01": {
+    "acceptance": [],
+    "code": ["scripts/sdd/spec-conformance.mjs", "scripts/sdd/lib.mjs"],
+    "tests": ["scripts/sdd/spec-conformance.test.mjs"]
+  },
+  "NFR-001-02": {
+    "acceptance": [],
+    "code": [
+      "apps/api/src/app.ts",
+      "apps/api/src/problem.ts",
+      "apps/api/src/routes/schemas.ts",
+      "../.github/workflows/onboarding-control-tower.yml"
+    ],
+    "tests": ["apps/api/test/security/security.test.ts"]
+  }
+}
