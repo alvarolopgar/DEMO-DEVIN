@@ -41,7 +41,7 @@
     "@playwright/test": "1.63.0",
     "@redocly/cli": "2.54.2",
     "@types/node": "22.20.4",
-    "concurrently": "9.2.4",
+    "concurrently": "9.2.5",
     "eslint": "9.39.5",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "16.5.0",
@@ -50,11 +50,11 @@
     "tsx": "4.23.15",
     "typescript": "5.9.3",
     "typescript-eslint": "8.70.1",
-    "vitest": "4.1.11",
+    "vitest": "4.1.12",
     "yaml": "2.9.1"
   },
   "overrides": {
     "deepmerge-ts": "8.0.2",
-    "vite": "7.3.6"
+    "vite": "7.3.7"
   }
 }
